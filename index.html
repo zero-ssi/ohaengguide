@@ -1,0 +1,2664 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<!-- 파비콘 + PWA -->
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="오행가이드">
+
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QYNN6FBRVE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QYNN6FBRVE');
+</script>
+
+<title>오행가이드 — 나의 오행을 채우는 서울의 기운 명당</title>
+
+<!-- SEO 기본 메타태그 -->
+<meta name="description" content="서울의 호텔, 사찰, 명소를 오행(목·화·토·금·수)으로 분류한 풍수지리 인터랙티브 지도. 나에게 부족한 오행의 기운을 채워보세요.">
+<meta name="keywords" content="오행, 풍수지리, 서울 풍수, 오행가이드, 목화토금수, 서울 호텔, 서울 사찰, 서울 명소, 풍수 지도, 오행 지도, 사주 오행, 오행 보완, 서울 명당, 사주아이990, 사주아이, 그랜드 하얏트 서울">
+<meta name="author" content="오행가이드">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph (카카오톡, 페이스북 공유용) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="오행가이드 — 나의 오행을 채우는 서울의 기운 명당">
+<meta property="og:description" content="서울의 호텔, 사찰, 명소를 오행(목·화·토·금·수)으로 분류한 풍수지리 인터랙티브 지도.">
+<meta property="og:url" content="https://zero-ssi.github.io/ohaengguide/">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="오행가이드">
+
+<!-- 트위터 카드 -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="오행가이드 — 나의 오행을 채우는 서울의 기운 명당">
+<meta name="twitter:description" content="서울의 호텔, 사찰, 명소를 오행(목·화·토·금·수)으로 분류한 풍수지리 인터랙티브 지도.">
+
+<!-- 검색엔진 최적화 -->
+<link rel="canonical" href="https://zero-ssi.github.io/ohaengguide/">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .top-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(10, 10, 10, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  #header {
+    padding: 20px 24px 0;
+    padding-top: calc(20px + env(safe-area-inset-top));
+    text-align: center;
+  }
+
+  .title-text {
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    margin-bottom: 2px;
+  }
+
+  #header p {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 14px;
+  }
+
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    padding: 0 20px 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    justify-content: flex-start;
+  }
+
+  .filter-row::-webkit-scrollbar { display: none; }
+
+  .filter-row::before,
+  .filter-row::after {
+    content: '';
+    flex-shrink: 0;
+    width: 4px;
+  }
+
+  .filter-row.sub {
+    gap: 6px;
+    padding-bottom: 8px;
+    justify-content: center;
+  }
+
+  @media (min-width: 600px) {
+    .filter-row {
+      justify-content: center;
+    }
+    .filter-row::before,
+    .filter-row::after {
+      display: none;
+    }
+  }
+
+  .filter-btn {
+    border: none;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.4;
+    background: #1a1a1a;
+    color: #777;
+    border: 1px solid #2a2a2a;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .filter-btn .icon {
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .type-btn {
+    border: 1px solid #2a2a2a;
+    background: #1a1a1a;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0.4;
+    color: #777;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover, .type-btn:hover { opacity: 0.7; }
+
+  .filter-btn.active {
+    opacity: 1;
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+
+  .type-btn.active {
+    opacity: 1;
+    color: #fff;
+    border-color: #555;
+    background: #333;
+  }
+
+  .filter-btn[data-element="all"].active { background: #333; border-color: #555; }
+  .filter-btn[data-element="목"].active { background: #2d6a4f; border-color: #3d8a6f; }
+  .filter-btn[data-element="화"].active { background: #c1121f; border-color: #e13040; }
+  .filter-btn[data-element="토"].active { background: #8a6c1a; border-color: #b08c2a; }
+  .filter-btn[data-element="금"].active { background: #4a4a4a; border-color: #777; }
+  .filter-btn[data-element="수"].active { background: #1d4e89; border-color: #2d6eaa; }
+
+  .map-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  /* ═══════════ 설정 페이지 ═══════════ */
+  .settings-list {
+    padding: 0 20px;
+  }
+  .settings-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background 0.15s;
+  }
+  .settings-item:hover { background: rgba(255,255,255,0.04); }
+  .settings-item:active { background: rgba(255,255,255,0.08); }
+  .settings-icon {
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.06);
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+  .settings-body { flex: 1; }
+  .settings-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: #eee;
+    margin-bottom: 2px;
+  }
+  .settings-desc {
+    font-size: 12px;
+    color: #777;
+  }
+  .settings-arrow {
+    font-size: 18px;
+    color: #444;
+    flex-shrink: 0;
+  }
+  .settings-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+    margin: 20px 0;
+  }
+  .settings-footer {
+    text-align: center;
+    padding: 0 0 40px;
+  }
+  .settings-disclaimer {
+    font-size: 11px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .settings-copyright {
+    font-size: 11px;
+    color: #444;
+  }
+
+  /* ═══════════ 설치 안내 모달 ═══════════ */
+  .install-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 6000;
+  }
+  .install-overlay.active { display: block; }
+  .install-modal {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 6001;
+    background: #1a1a1a;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 24px calc(24px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .install-modal.active {
+    display: block;
+    transform: translateY(0);
+  }
+  .install-modal-header {
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .install-modal-body {
+    font-size: 14px;
+    color: #bbb;
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+  .install-modal-body .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .install-modal-body .step-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .install-modal-body .step-text { flex: 1; }
+  .install-modal-close {
+    width: 100%;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    padding: 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .install-modal-close:hover { background: rgba(255,255,255,0.15); }
+  .install-tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 3px;
+    margin-bottom: 20px;
+  }
+  .install-tab {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: #777;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    padding: 8px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .install-tab.active {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+  }
+
+  .disclaimer-toast {
+    position: fixed;
+    bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    z-index: 5000;
+    background: rgba(20, 20, 20, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 11px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    text-align: center;
+    line-height: 1.5;
+    white-space: normal;
+    width: calc(100% - 40px);
+    max-width: 500px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    pointer-events: none;
+    transition: opacity 0.8s, transform 0.8s;
+    opacity: 1;
+  }
+  .disclaimer-toast.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+
+  #map {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  /* ── 마커 공통 ── */
+  .custom-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    border: 2px solid rgba(255,255,255,0.8);
+    transition: transform 0.2s;
+  }
+
+  .custom-marker:hover { transform: scale(1.2); }
+
+  .custom-marker.hotel { border-radius: 50%; }
+  .custom-marker.landmark { border-radius: 6px; }
+  .custom-marker.temple {
+    border-radius: 4px;
+    transform: rotate(45deg);
+  }
+  .custom-marker.temple .marker-emoji { transform: rotate(-45deg); }
+  .custom-marker.temple:hover { transform: rotate(45deg) scale(1.2); }
+
+  .custom-marker.dual {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  /* ── 팝업 ── */
+  .popup-content {
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    padding: 4px;
+    min-width: 240px;
+    max-width: 300px;
+  }
+
+  .popup-badges {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .popup-content .element-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .popup-content .type-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #999;
+    background: #f0f0f0;
+  }
+
+  .popup-content h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #111;
+  }
+
+  .popup-content .feng-shui {
+    font-size: 12px;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .popup-content .address {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .popup-content .address-text {
+    flex: 1;
+  }
+
+  .copy-btn {
+    flex-shrink: 0;
+    border: 1px solid #ddd;
+    background: #f8f8f8;
+    color: #888;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    padding: 2px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .copy-btn:hover {
+    background: #eee;
+    color: #555;
+  }
+
+  .copy-btn.copied {
+    background: #2d6a4f;
+    color: #fff;
+    border-color: #2d6a4f;
+  }
+
+  .popup-content .fortune {
+    font-size: 11px;
+    color: #1d4e89;
+    font-weight: 700;
+    padding: 6px 10px;
+    background: #f0f4ff;
+    border-radius: 8px;
+  }
+
+  .element-card {
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    border-left: 3px solid;
+  }
+
+  .element-card .el-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .element-card .el-header .el-emoji { font-size: 14px; }
+
+  .element-card .el-desc {
+    font-size: 11px;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 4px;
+  }
+
+  .element-card .el-fortune {
+    font-size: 11px;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .relation-card {
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-top: 2px;
+    margin-bottom: 6px;
+  }
+
+  .relation-card.sangsaeng {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border: 1px solid #f6d860;
+  }
+
+  .relation-card.sanggeuk {
+    background: linear-gradient(135deg, #faf5ff, #ede9fe);
+    border: 1px solid #c4b5fd;
+  }
+
+  .relation-card .rel-header {
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .relation-card.sangsaeng .rel-header { color: #92400e; }
+  .relation-card.sanggeuk .rel-header { color: #5b21b6; }
+
+  .relation-card .rel-name {
+    font-size: 12px;
+    font-weight: 900;
+    margin-bottom: 4px;
+  }
+
+  .relation-card.sangsaeng .rel-name { color: #78350f; }
+  .relation-card.sanggeuk .rel-name { color: #4c1d95; }
+
+  .relation-card .rel-desc {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .relation-card.sangsaeng .rel-desc { color: #92400e; }
+  .relation-card.sanggeuk .rel-desc { color: #5b21b6; }
+
+
+  .leaflet-popup-content-wrapper {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+  }
+
+  .leaflet-popup-tip { box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important; }
+
+  /* ═══════════ 모바일 상세 바텀시트 ═══════════ */
+  .detail-sheet-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 2000;
+  }
+  .detail-sheet-overlay.active { display: block; }
+
+  .detail-sheet {
+    position: fixed;
+    bottom: calc(50px + env(safe-area-inset-bottom, 0px)); left: 0; right: 0;
+    z-index: 2001;
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    max-height: 65vh;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0;
+  }
+  .detail-sheet.active { transform: translateY(0); }
+
+  .detail-sheet-handle {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .detail-sheet-handle .bar {
+    width: 40px; height: 4px;
+    background: #ccc; border-radius: 2px;
+  }
+
+  .detail-sheet-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 20px 24px;
+    overscroll-behavior: contain;
+  }
+
+  .detail-sheet-body .popup-content {
+    max-width: 100%;
+    min-width: auto;
+  }
+
+  /* 데스크톱에서도 바텀시트 사용 (구 상세 포함) */
+  /* 모바일에서는 Leaflet 팝업 숨김 */
+  @media (max-width: 768px) {
+    .leaflet-popup { display: none !important; }
+  }
+
+  /* ═══════════ 하단 슬라이드업 패널 ═══════════ */
+  .bottom-panel {
+    position: absolute;
+    bottom: calc(50px + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    background: rgba(14, 14, 14, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px 20px 0 0;
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .bottom-panel.collapsed {
+    transform: translateY(calc(100% - 70px - env(safe-area-inset-bottom, 0px)));
+  }
+
+  .panel-handle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 20px 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .panel-handle .grab-bar {
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 2px;
+    margin-bottom: 8px;
+  }
+
+  .panel-handle .panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-handle .panel-count {
+    font-size: 11px;
+    font-weight: 700;
+    color: #666;
+    background: rgba(255,255,255,0.08);
+    padding: 2px 8px;
+    border-radius: 100px;
+  }
+
+  .panel-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 12px 20px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .panel-list::-webkit-scrollbar { width: 4px; }
+  .panel-list::-webkit-scrollbar-track { background: transparent; }
+  .panel-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+  }
+
+  /* 타입 그룹 헤더 */
+  .panel-group-header {
+    font-size: 11px;
+    font-weight: 700;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 14px 8px 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .panel-group-header .gh-shape {
+    width: 10px;
+    height: 10px;
+    background: #444;
+    border: 1px solid rgba(255,255,255,0.3);
+    flex-shrink: 0;
+  }
+  .panel-group-header .gh-shape.s-hotel { border-radius: 50%; }
+  .panel-group-header .gh-shape.s-landmark { border-radius: 2px; }
+  .panel-group-header .gh-shape.s-temple { border-radius: 1px; transform: rotate(45deg); }
+
+  /* 리스트 아이템 */
+  .panel-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background 0.15s;
+  }
+
+  .panel-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .panel-item:active {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .panel-item-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .panel-item-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .panel-item-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+  }
+
+  .panel-item-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #eee;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .panel-item-badges {
+    display: flex;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+
+  .panel-item-badges .mini-badge {
+    padding: 1px 6px;
+    border-radius: 100px;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .panel-item-fortune {
+    font-size: 11px;
+    color: #777;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .panel-item-arrow {
+    color: #444;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  /* 관계 태그 */
+  .panel-item-rel {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 100px;
+    flex-shrink: 0;
+  }
+  .panel-item-rel.sangsaeng {
+    background: rgba(246, 216, 96, 0.2);
+    color: #d4a017;
+  }
+  .panel-item-rel.sanggeuk {
+    background: rgba(196, 181, 253, 0.2);
+    color: #a78bfa;
+  }
+
+  /* ═══════════ 바텀 네비게이션 ═══════════ */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 3000;
+    background: rgba(14, 14, 14, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 0 6px;
+    cursor: pointer;
+    color: #555555;
+    font-size: 10px;
+    font-weight: 700;
+    transition: color 0.2s;
+    gap: 2px;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .nav-item.active { color: #ffffff; }
+  .nav-item .nav-icon { line-height: 0; display: flex; align-items: center; justify-content: center; }
+
+  /* ═══════════ 캘린더 페이지 ═══════════ */
+  .calendar-page {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1500;
+    background: #0a0a0a;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+  .calendar-page.active { display: block; }
+
+  .cal-header {
+    text-align: center;
+    padding: 20px 24px 14px;
+    padding-top: calc(20px + env(safe-area-inset-top));
+  }
+  .cal-header h1 {
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+  }
+  .cal-header p {
+    font-size: 13px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  /* 오늘의 요약 (간략) */
+  .today-summary {
+    margin: 0 20px 16px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(40,40,40,0.8), rgba(20,20,20,0.9));
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+  }
+  .today-summary .ts-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .today-summary .ts-ganji {
+    font-size: 24px;
+    font-weight: 900;
+  }
+  .today-summary .ts-kr {
+    font-size: 13px;
+    color: #aaa;
+    font-weight: 700;
+  }
+  .today-summary .ts-elements {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .today-summary .ts-el {
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .today-summary .ts-desc {
+    font-size: 12px;
+    color: #888;
+    line-height: 1.5;
+  }
+  .today-summary { margin-bottom: 26px; }
+
+  /* 주/월 토글 */
+  .view-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin: 0 20px 16px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 3px;
+  }
+  .view-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: #777;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    padding: 8px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .view-btn.active {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+  }
+
+  /* 월 네비게이션 */
+  .month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 0 20px 16px;
+  }
+  .month-nav .month-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: transparent;
+    color: #aaa;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .month-nav .month-btn:hover { border-color: #888; color: #fff; }
+  .month-nav .month-label {
+    font-size: 18px;
+    font-weight: 900;
+    color: #eee;
+    min-width: 140px;
+    text-align: center;
+  }
+
+  /* 캘린더 그리드 */
+  .cal-grid {
+    padding: 0 16px;
+    margin-bottom: 20px;
+  }
+  .cal-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .cal-weekdays span {
+    font-size: 12px;
+    font-weight: 700;
+    color: #666;
+    padding: 4px 0;
+  }
+  .cal-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+  .cal-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 0 6px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    min-height: 52px;
+  }
+  .cal-day:hover { background: rgba(255,255,255,0.05); }
+  .cal-day.today {
+    border: 1.5px solid rgba(255,255,255,0.4);
+  }
+  .cal-day.selected {
+    background: rgba(255,255,255,0.1);
+  }
+  .cal-day.other-month { opacity: 0.3; }
+  .cal-day .day-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ddd;
+    margin-bottom: 4px;
+  }
+  .cal-day .day-dots {
+    display: flex;
+    gap: 3px;
+  }
+  .cal-day .day-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+
+  /* 오행 범례 */
+  .cal-legend {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    padding: 0 20px 20px;
+  }
+  .cal-legend .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #888;
+    font-weight: 700;
+  }
+  .cal-legend .leg-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+
+  /* 선택된 날 상세 */
+  .day-detail {
+    margin: 0 20px 24px;
+    padding: 24px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(40,40,40,0.8), rgba(20,20,20,0.9));
+    border: 1px solid rgba(255,255,255,0.1);
+    display: none;
+  }
+  .day-detail.active { display: block; }
+  .day-detail .dd-date {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .day-detail .dd-ganji {
+    font-size: 36px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .day-detail .dd-kr {
+    font-size: 14px;
+    color: #aaa;
+    text-align: center;
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+  .day-detail .dd-elements {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .day-detail .dd-el {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .day-detail .dd-section {
+    padding: 14px 16px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border-left: 3px solid;
+  }
+  .day-detail .dd-section .dd-sec-title {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .day-detail .dd-section .dd-sec-body {
+    font-size: 12px;
+    line-height: 1.6;
+    color: #bbb;
+  }
+  .day-detail .dd-relation {
+    padding: 14px 16px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+  .day-detail .dd-relation.sangsaeng {
+    background: rgba(246, 216, 96, 0.1);
+    color: #f6d860;
+    border: 1px solid rgba(246, 216, 96, 0.15);
+  }
+  .day-detail .dd-relation.sanggeuk {
+    background: rgba(196, 181, 253, 0.1);
+    color: #c4b5fd;
+    border: 1px solid rgba(196, 181, 253, 0.15);
+  }
+  .day-detail .dd-interpret {
+    font-size: 13px;
+    color: #ccc;
+    line-height: 1.7;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 10px;
+  }
+  .day-detail .dd-recommend {
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .day-detail .dd-recommend .rec-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    margin-bottom: 8px;
+  }
+  .day-detail .dd-recommend .rec-item {
+    font-size: 12px;
+    color: #ccc;
+    line-height: 1.6;
+    padding-left: 12px;
+    position: relative;
+  }
+  .day-detail .dd-recommend .rec-item::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #666;
+  }
+
+  /* ── 구 단위 마커 ── */
+  .district-marker { background: none !important; border: none !important; }
+  .district-label {
+    display: inline-flex; align-items: center; gap: 0;
+    padding: 3px 10px;
+    border-radius: 100px;
+    border: none;
+    font-size: 11px; font-weight: 700;
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    letter-spacing: -0.3px;
+  }
+
+
+  /* ── 동네별 상세 ── */
+  .dong-section { margin-top: 16px; }
+  .dong-section-title {
+    font-size: 13px; font-weight: 700; color: #888;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+  }
+  .dong-item {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    background: #f8f8f8;
+  }
+  .dong-item.dong-highlight {
+    background: #f0f7ff;
+    border: 1px solid #d0e4ff;
+  }
+  .dong-header {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 4px; flex-wrap: wrap;
+  }
+  .dong-emoji { font-size: 14px; }
+  .dong-name { font-size: 13px; font-weight: 700; color: #222; }
+  .dong-element { font-size: 11px; font-weight: 600; }
+  .dong-badge {
+    font-size: 9px; font-weight: 700;
+    padding: 2px 6px; border-radius: 100px;
+    background: #e3f2fd; color: #1976d2;
+  }
+  .dong-desc { font-size: 12px; color: #555; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="map-wrapper">
+  <div class="top-overlay">
+    <div id="header">
+      <div class="title-text">오행가이드</div>
+      <p>나의 오행을 채우는 서울의 기운 명당</p>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active" data-element="all">전체</button>
+      <button class="filter-btn" data-element="목"><span class="icon">🌿</span> 木 목</button>
+      <button class="filter-btn" data-element="화"><span class="icon">🔥</span> 火 화</button>
+      <button class="filter-btn" data-element="토"><span class="icon">🏔️</span> 土 토</button>
+      <button class="filter-btn" data-element="금"><span class="icon">🪙</span> 金 금</button>
+      <button class="filter-btn" data-element="수"><span class="icon">💧</span> 水 수</button>
+    </div>
+    <div class="filter-row sub">
+      <button class="type-btn active" data-type="all">전체</button>
+      <button class="type-btn" data-type="hotel">호텔</button>
+      <button class="type-btn" data-type="temple">사찰</button>
+      <button class="type-btn" data-type="landmark">명소</button>
+      <button class="type-btn" data-type="district" id="districtFilterBtn">지역</button>
+    </div>
+  </div>
+  <div id="map"></div>
+  <div class="disclaimer-toast" id="disclaimerToast">본 지도는 풍수지리 리서치 자료를 기반으로 만들어졌으며, 과학적 사실과는 무관합니다. 재미로 봐주세요.</div>
+
+  <!-- 모바일 상세 바텀시트 -->
+  <div class="detail-sheet-overlay" id="detailOverlay"></div>
+  <div class="detail-sheet" id="detailSheet">
+    <div class="detail-sheet-handle" id="detailHandle"><div class="bar"></div></div>
+    <div class="detail-sheet-body" id="detailBody"></div>
+  </div>
+
+  <!-- 하단 슬라이드업 패널 -->
+  <div class="bottom-panel collapsed" id="bottomPanel">
+    <div class="panel-handle" id="panelHandle">
+      <div class="grab-bar"></div>
+      <div class="panel-title">
+        장소 목록
+        <span class="panel-count" id="panelCount">33</span>
+      </div>
+    </div>
+    <div class="panel-list" id="panelList"></div>
+  </div>
+</div>
+
+<!-- ═══════════ 캘린더 페이지 ═══════════ -->
+<div class="calendar-page" id="calendarPage">
+  <div class="cal-header">
+    <h1>오행캘린더</h1>
+    <p>매일 바뀌는 오행 기운</p>
+  </div>
+
+  <!-- 주/월 토글 -->
+  <div class="view-toggle">
+    <button class="view-btn active" data-view="week">주</button>
+    <button class="view-btn" data-view="month">월</button>
+  </div>
+
+  <!-- 날짜 네비게이션 -->
+  <div class="month-nav">
+    <button class="month-btn" id="prevNav">‹</button>
+    <span class="month-label" id="navLabel"></span>
+    <button class="month-btn" id="nextNav">›</button>
+  </div>
+
+  <!-- 캘린더 그리드 -->
+  <div class="cal-grid">
+    <div class="cal-weekdays">
+      <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+    </div>
+    <div class="cal-days" id="calDays"></div>
+  </div>
+
+  <div class="cal-legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#2d6a4f"></div>목</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#c1121f"></div>화</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#b08c2a"></div>토</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#888"></div>금</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#1d4e89"></div>수</div>
+  </div>
+
+  <!-- 선택된 날 상세 해석 -->
+  <div class="day-detail" id="dayDetail"></div>
+</div>
+
+<!-- ═══════════ 설정 페이지 ═══════════ -->
+<div class="calendar-page" id="settingsPage">
+  <div class="cal-header">
+    <h1>설정</h1>
+  </div>
+  <div class="settings-list">
+    <div class="settings-item" id="installBtn">
+      <div class="settings-icon">📲</div>
+      <div class="settings-body">
+        <div class="settings-label">홈 화면에 추가</div>
+        <div class="settings-desc">앱처럼 바로 접속할 수 있어요</div>
+      </div>
+      <div class="settings-arrow">›</div>
+    </div>
+    <div class="settings-item" id="contactBtn">
+      <div class="settings-icon">💬</div>
+      <div class="settings-body">
+        <div class="settings-label">제안/문의하기</div>
+        <div class="settings-desc">이메일로 의견을 보내주세요</div>
+      </div>
+      <div class="settings-arrow">›</div>
+    </div>
+    <div class="settings-divider"></div>
+    <div class="settings-footer">
+      <p class="settings-disclaimer">본 지도는 풍수지리 리서치 자료를 기반으로 만들어졌으며, 과학적 사실과는 무관합니다. 재미로 봐주세요.</p>
+      <p class="settings-copyright">© zerossi. All rights reserved.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 설치 안내 모달 ═══════════ -->
+<div class="install-overlay" id="installOverlay"></div>
+<div class="install-modal" id="installModal">
+  <div class="install-modal-header">홈 화면에 추가하기</div>
+  <div class="install-modal-body" id="installBody"></div>
+  <button class="install-modal-close" id="installClose">닫기</button>
+</div>
+
+<!-- ═══════════ 바텀 네비게이션 ═══════════ -->
+<div class="bottom-nav" id="bottomNav">
+  <div class="nav-item active" data-page="map">
+    <span class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5.793 4.793c3.428-3.428 8.986-3.428 12.414 0s3.428 8.986 0 12.414l-5.5 5.5a1 1 0 0 1-1.414 0l-5.5-5.5c-3.428-3.428-3.428-8.986 0-12.414ZM12 9.5a1.5 1.5 0 1 0 .01 3.01A1.5 1.5 0 0 0 12 9.5Z" fill="currentColor"/></svg></span>
+    지도
+  </div>
+  <div class="nav-item" data-page="calendar">
+    <span class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 13a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm13 0a1 1 0 0 1 1 1v5a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-5a1 1 0 0 1 1-1h6ZM10 3a1 1 0 0 1 1 1v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a1 1 0 0 1 1-1h6Zm7 0a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" fill="currentColor"/></svg></span>
+    캘린더
+  </div>
+  <div class="nav-item" data-page="settings">
+    <span class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9.778 2.249a6.5 6.5 0 0 1 4.444 0c.455.104.777.51.777.976v1.846c0 .77.834 1.251 1.5.867l1.602-.925.155-.072a1 1 0 0 1 1.078.259 9 9 0 0 1 1.896 3.8c.138.446-.05.929-.454 1.162l-1.602.925c-.666.385-.666 1.347 0 1.731l1.599.924c.404.233.593.715.456 1.16a9 9 0 0 1-1.896 3.852 1 1 0 0 1-1.233.186l-1.602-.925c-.666-.385-1.5.096-1.5.867v1.849a1 1 0 0 1-.777.976 6.5 6.5 0 0 1-4.445 0 1 1 0 0 1-.777-.976v-1.846c0-.77-.833-1.25-1.5-.866l-1.6.924a1 1 0 0 1-1.234-.187 9 9 0 0 1-1.896-3.8 1 1 0 0 1 .455-1.161l1.6-.924c.667-.385.667-1.348 0-1.733l-1.599-.924a1 1 0 0 1-.455-1.16 9 9 0 0 1 1.896-3.851 1 1 0 0 1 1.231-.187l1.603.925c.666.384 1.5-.097 1.5-.867V3.222l.014-.171a1 1 0 0 1 .764-.802ZM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" fill="currentColor"/></svg></span>
+    설정
+  </div>
+</div>
+
+<script>
+const ELEMENT_CONFIG = {
+  목: { color: '#2d8a4e', bg: '#ecfdf5', emoji: '🌿', label: '木 목', virtue: '仁' },
+  화: { color: '#E85A4F', bg: '#fef0ef', emoji: '🔥', label: '火 화', virtue: '禮' },
+  토: { color: '#F2B705', bg: '#fef9e7', emoji: '🏔️', label: '土 토', virtue: '信' },
+  금: { color: '#D4C5A9', bg: '#f7f4ed', emoji: '🪙', label: '金 금', virtue: '義' },
+  수: { color: '#6B7B8D', bg: '#eef1f4', emoji: '💧', label: '水 수', virtue: '智' },
+};
+
+const TYPE_LABELS = {
+  hotel: '호텔',
+  temple: '사찰',
+  landmark: '명소',
+};
+
+const TYPE_ORDER = ['hotel', 'temple', 'landmark'];
+
+const ELEMENT_EMOJI = {
+  목: '🌿', 화: '🔥', 토: '🏔️', 금: '🪙', 수: '💧',
+};
+
+const RELATIONS = {
+  '목화': { type: 'sangsaeng', name: '목생화(木生火)', desc: '목이 화를 낳아, 성장의 에너지가 명예·표현력으로 피어나는 흐름' },
+  '화토': { type: 'sangsaeng', name: '화생토(火生土)', desc: '화가 토를 낳아, 열정이 안정·신뢰의 기반으로 다져지는 흐름' },
+  '토금': { type: 'sangsaeng', name: '토생금(土生金)', desc: '토가 금을 낳아, 안정된 기반 위에 재물이 쌓이는 흐름' },
+  '금수': { type: 'sangsaeng', name: '금생수(金生水)', desc: '금이 수를 낳아, 결단력이 지혜와 소통으로 이어지는 흐름' },
+  '수목': { type: 'sangsaeng', name: '수생목(水生木)', desc: '수가 목을 낳아, 지혜와 인맥이 성장의 밑거름이 되는 흐름' },
+  '목토': { type: 'sanggeuk', name: '목극토(木剋土)', desc: '성장하려는 힘과 안정하려는 힘이 팽팽하게 맞서는 긴장의 균형' },
+  '토수': { type: 'sanggeuk', name: '토극수(土剋水)', desc: '안정과 유동이 서로 견제하며 만드는 긴장의 균형' },
+  '수화': { type: 'sanggeuk', name: '수극화(水剋火)', desc: '지혜와 열정이 서로 다스리며 만드는 긴장의 균형' },
+  '화금': { type: 'sanggeuk', name: '화극금(火剋金)', desc: '열정과 결단이 서로 벼리며 만드는 긴장의 균형' },
+  '금목': { type: 'sanggeuk', name: '금극목(金剋木)', desc: '결단과 성장이 서로 다듬으며 만드는 긴장의 균형' },
+};
+
+function getRelation(el1, el2) {
+  return RELATIONS[el1 + el2] || RELATIONS[el2 + el1] || null;
+}
+
+// ── 데이터 ──
+const places = [
+
+  // ═══════════ 명소: 산 ═══════════
+  { name: '북악산 (백악산)', elements: ['화'], type: 'landmark',
+    lat: 37.5930, lng: 126.9820, address: '서울특별시 종로구 북악산로 267',
+    fengshui: '서울 주산(主山). 뾰족한 봉우리가 화형산(火形山)에 해당. 조선시대 풍수서에서 화기로 분류',
+    fortune: '화기 → 명예·인기·표현력 상승' },
+
+  { name: '남산 (목멱산)', elements: ['화'], type: 'landmark',
+    lat: 37.5512, lng: 126.9882, address: '서울특별시 용산구 남산공원길 105',
+    fengshui: '서울 안산(案山)이자 주작(朱雀) 위치. 남방=화. "목멱산"의 木자와 혼동하기 쉬우나 풍수적으로는 화기',
+    fortune: '화기 → 명예·인기·열정 회복' },
+
+  { name: '인왕산', elements: ['금'], type: 'landmark',
+    lat: 37.5840, lng: 126.9590, address: '서울특별시 종로구 사직로9길',
+    fengshui: '서울 우백호(西=金). 화강암 바위산으로 금기(金氣)가 강함. 돈의문(敦義門)의 義도 금에 해당',
+    fortune: '금기 → 재물 축적·결단력·승부운 강화' },
+
+  { name: '낙산 (낙산공원)', elements: ['목'], type: 'landmark',
+    lat: 37.5803, lng: 127.0070, address: '서울특별시 종로구 낙산길 41',
+    fengshui: '서울 좌청룡(東=木). 동쪽에서 목기를 받아주는 산. 흥인지문(興仁之門)의 仁도 목에 해당',
+    fortune: '목기 → 새출발·추진력·간 건강 회복' },
+
+  { name: '관악산', elements: ['화'], type: 'landmark',
+    lat: 37.4430, lng: 126.9640, address: '서울특별시 관악구 관악로 1',
+    fengshui: '서울에서 화기가 가장 강한 산. 불꽃 형상의 봉우리(화형산). 숭례문·해태상이 이 화기를 제어하기 위해 배치됨',
+    fortune: '강한 화기 → 명예·표현력 극대화 (과하면 구설 주의)' },
+
+  { name: '아차산', elements: ['목'], type: 'landmark',
+    lat: 37.5710, lng: 127.1030, address: '서울특별시 광진구 광장로1다길 60',
+    fengshui: '서울 동쪽 외사산(東=木). 한강과 만나 배산임수 형성',
+    fortune: '목기 → 성장·건강·장수운. 간·눈·근육 회복' },
+
+  { name: '북한산', elements: ['금'], type: 'landmark',
+    lat: 37.6590, lng: 126.9780, address: '서울특별시 성북구 보국문로262길 103',
+    fengshui: '서울 외사산 중 가장 웅장. 화강암 바위봉우리(인수봉·백운봉) = 금형산(金形山)',
+    fortune: '금기 → 재물 축적·결단력·폐 건강 강화' },
+
+  // ═══════════ 명소: 물 ═══════════
+  { name: '한강 (여의도한강공원)', elements: ['수'], type: 'landmark',
+    lat: 37.5170, lng: 126.9530, address: '서울특별시 영등포구 여의동로 330',
+    fengshui: '서울 외명당수. 도시 전체의 수기를 관장하는 대하(大河)',
+    fortune: '수기 → 인맥·소통·지혜·재물 흐름 활성화' },
+
+  { name: '청계천 (청계광장)', elements: ['수'], type: 'landmark',
+    lat: 37.5700, lng: 126.9890, address: '서울특별시 중구 청계천로 8',
+    fengshui: '서울 내명당수. 경복궁 앞을 흐르며 도성의 기운을 순환시키는 물길',
+    fortune: '수기 → 소통·교류·지혜운 상승' },
+
+  { name: '석촌호수', elements: ['수'], type: 'landmark',
+    lat: 37.5090, lng: 127.1010, address: '서울특별시 송파구 송파나루길 256',
+    fengshui: '한강 옛 물줄기에서 형성된 호수. 송파 일대 수기 집결지',
+    fortune: '수기 → 인맥·교류·적응력 향상' },
+
+  // ═══════════ 명소: 건축 ═══════════
+  { name: '경복궁', elements: ['금', '토'], type: 'landmark',
+    lat: 37.5796, lng: 126.9770, address: '서울특별시 종로구 사직로 161',
+    fengshui: '북악산 배산, 청계천 임수, 남산 안산. 산태극수태극의 명당 정중앙',
+    elementDetails: [
+      { element: '금', desc: '북악산 정기 직수, 인왕산 우백호의 금기가 응축된 자리', fortune: '금기 → 재물 축적·결단력·권위' },
+      { element: '토', desc: '도성 정중앙, 사방의 기운이 모이는 안정의 자리', fortune: '토기 → 안정·신뢰·기반 강화' },
+    ],
+    fortune: '토생금(土生金) 상생 — 안정된 기반 위에 재물이 쌓이는 복합 명당' },
+
+  { name: '창덕궁', elements: ['목'], type: 'landmark',
+    lat: 37.5794, lng: 126.9910, address: '서울특별시 종로구 율곡로 99',
+    fengshui: '응봉산 자락, 자연 지형에 순응한 배치. 후원(비원)의 울창한 수림이 목기(木氣)의 정수',
+    fortune: '목기 → 성장·창의력·새 출발. 자연과 교감하며 기운 충전' },
+
+  { name: '창경궁', elements: ['목', '화'], type: 'landmark',
+    lat: 37.5788, lng: 126.9948, address: '서울특별시 종로구 창경궁로 185',
+    fengshui: '창덕궁 동쪽, 명정전이 동향으로 떠오르는 해의 기운을 받는 특이한 배치. 효와 온기의 궁',
+    elementDetails: [
+      { element: '목', desc: '창덕궁과 연결된 동쪽 자락, 생장의 기운이 이어지는 자리', fortune: '목기 → 성장·회복·새로운 시작' },
+      { element: '화', desc: '명정전 동향 배치로 아침 햇살을 정면으로 받아 화기가 깃든 자리', fortune: '화기 → 명예·따뜻함·표현력 상승' },
+    ],
+    fortune: '목생화(木生火) 상생 — 성장의 기운이 빛과 명예로 피어나는 상생의 자리' },
+
+  { name: '덕수궁', elements: ['금', '수'], type: 'landmark',
+    lat: 37.5658, lng: 126.9748, address: '서울특별시 중구 세종대로 99',
+    fengshui: '도심 한복판 낮은 지대. 석조전 등 근대 서양 건축과 전통이 공존하는 격변의 궁',
+    elementDetails: [
+      { element: '금', desc: '도심 금융·상업 중심부, 석조전의 단단한 석재 기운', fortune: '금기 → 결단력·재물·정제된 판단' },
+      { element: '수', desc: '낮은 지대에 물이 모이는 형국, 대한제국 외교의 지혜', fortune: '수기 → 지혜·소통·유연한 대처' },
+    ],
+    fortune: '금생수(金生水) 상생 — 단단한 결단이 지혜로운 흐름으로 이어지는 상생의 자리' },
+
+  { name: '경희궁', elements: ['금'], type: 'landmark',
+    lat: 37.5712, lng: 126.9681, address: '서울특별시 종로구 새문안로 45',
+    fengshui: '인왕산 바위 자락 서쪽 언덕. 서쪽은 금(金)의 방위이며, 화강암 암반의 금기가 강한 자리',
+    fortune: '금기 → 재물 축적·냉철한 판단. 결단이 필요할 때 방문 추천' },
+
+  { name: '숭례문 (남대문)', elements: ['화'], type: 'landmark',
+    lat: 37.5599, lng: 126.9753, address: '서울특별시 중구 세종대로 40',
+    fengshui: '이화치화(以火治火) — "禮(화)" 자를 세로로 써서 화로 관악산 화기를 다스림',
+    fortune: '화기 → 명예 수호·액막이' },
+
+  { name: '광화문 해태상', elements: ['수'], type: 'landmark',
+    lat: 37.5760, lng: 126.9769, address: '서울특별시 종로구 사직로 161',
+    fengshui: '해태 = 물의 신수(海陀). 수극화(水剋火) 원리로 관악산 화기를 제어. 숭례문(이화치화)과 다른 원리',
+    fortune: '수기 → 지혜로운 수호·재난 방지' },
+
+  // ═══════════ 사찰 ═══════════
+  { name: '조계사', elements: ['토'], type: 'temple',
+    lat: 37.5728, lng: 126.9839, address: '서울특별시 종로구 우정국로 55',
+    fengshui: '대한불교 조계종 총본산. 도성 정중앙 평지에 위치하여 토기(土氣)가 두터움. 사방의 기운을 모아 중심을 잡는 자리',
+    fortune: '토기 → 안정·중심·마음의 평화. 흔들릴 때 방문하면 중심 회복' },
+
+  { name: '봉은사', elements: ['화', '금'], type: 'temple',
+    lat: 37.5149, lng: 127.0574, address: '서울특별시 강남구 봉은사로 531',
+    fengshui: '수서산(대모산) 남쪽 자락. 강남 壬午(화) 지역에 위치하며 1,200년 역사의 사찰. 코엑스 옆 상업 에너지와 공명',
+    elementDetails: [
+      { element: '화', desc: '강남 壬午(화) 지역, 남방 화기. 1,200년 역사의 열정과 표현의 에너지', fortune: '화기 → 명예·인기·표현력 상승' },
+      { element: '금', desc: '코엑스·삼성동 금융 상업 에너지와 공명. 재물과 결단의 기운', fortune: '금기 → 재물 축적·결단력 강화' },
+    ],
+    fortune: '화극금(火剋金) 긴장 — 열정과 결단이 서로 벼리며 만드는 균형의 명당' },
+
+  { name: '길상사', elements: ['목'], type: 'temple',
+    lat: 37.5933, lng: 127.0053, address: '서울특별시 성북구 선잠로5길 68',
+    fengshui: '북악산 동쪽 자락, 성북동 숲속. 대원각(요정)에서 법정 스님에 시주되어 사찰로 재생. 동방 목기와 울창한 수목의 치유 명당',
+    fortune: '목기 → 새출발·성장·건강 회복. 번아웃 시 생기 충전' },
+
+  { name: '진관사', elements: ['금'], type: 'temple',
+    lat: 37.6367, lng: 126.9417, address: '서울특별시 은평구 진관길 73',
+    fengshui: '북한산 비봉(금형산) 바로 아래 자리한 천년 고찰. 화강암 바위 금기를 직접 수혈받는 위치. 2009년 독립운동 태극기 발견지',
+    fortune: '금기 → 재물 축적·결단력 강화. 사업 결정 앞두고 방문 추천' },
+
+  { name: '도선사', elements: ['금'], type: 'temple',
+    lat: 37.6470, lng: 127.0010, address: '서울특별시 강북구 삼양로173길 504',
+    fengshui: '북한산 만경대 아래, 해발 350m. 금형산 금기를 가장 가까이서 받는 사찰. 역대 대통령·재벌이 기도하던 곳으로 권위·재물의 기운이 현대에도 이어짐',
+    fortune: '금기 → 재물·권위·결단력 극대화. 큰 승부 앞에 방문 추천' },
+
+  { name: '봉원사', elements: ['토', '금'], type: 'temple',
+    lat: 37.5697, lng: 126.9440, address: '서울특별시 서대문구 봉원사길 120',
+    fengshui: '안산(鞍山) 자락의 고찰. 연등회(국가무형문화재)·영산재(유네스코) 발상지',
+    elementDetails: [
+      { element: '토', desc: '안산은 나지막하고 둥근 토형산(土形山). 전통을 보존하고 이어가는 터', fortune: '토기 → 안정·전통·기반 다지기' },
+      { element: '금', desc: '서방(西=金) 방위의 기운. 인왕산 금기권과 인접', fortune: '금기 → 재물 축적·결단력 강화' },
+    ],
+    fortune: '토생금(土生金) 상생 — 안정된 기반 위에 재물이 쌓이는 명당' },
+
+  { name: '화계사', elements: ['금', '수'], type: 'temple',
+    lat: 37.6310, lng: 127.0170, address: '서울특별시 강북구 화계사길 117',
+    fengshui: '삼각산(북한산) 자락 + 화계(華溪) 계곡수가 흐르는 곳. 숭산 스님의 국제포교 거점으로 외국인 수행자가 많은 국제 선원',
+    elementDetails: [
+      { element: '금', desc: '삼각산(북한산) 화강암 바위의 금기를 직접 수혈', fortune: '금기 → 재물·결단력 강화' },
+      { element: '수', desc: '화계(華溪) 계곡수가 절을 감싸며 흐름. 국제 교류의 소통 에너지', fortune: '수기 → 지혜·인맥·소통 활성화' },
+    ],
+    fortune: '금생수(金生水) 상생 — 결단력이 지혜와 교류로 이어지는 명당' },
+
+  { name: '흥천사', elements: ['목', '수'], type: 'temple',
+    lat: 37.6050, lng: 127.0050, address: '서울특별시 성북구 흥천사길 29',
+    fengshui: '정릉(貞陵) 동쪽 자락. 태조가 신덕왕후를 위해 세운 원찰(願刹). 정릉천이 절 앞을 흐름',
+    elementDetails: [
+      { element: '목', desc: '정릉 산림에 둘러싸인 울창한 숲속 사찰. 회복과 재생의 목기', fortune: '목기 → 성장·건강·장수운' },
+      { element: '수', desc: '북방 수기 + 정릉천이 절 앞을 흐르며 수기를 공급', fortune: '수기 → 지혜·인맥·소통 강화' },
+    ],
+    fortune: '수생목(水生木) 상생 — 지혜가 성장을 키우는 명당' },
+
+  // ═══════════ 호텔: 土 ═══════════
+  { name: '롯데호텔 서울', elements: ['토'], type: 'hotel',
+    lat: 37.5651, lng: 126.9810, address: '서울특별시 중구 을지로 30',
+    fengshui: '중구 己丑(토·토) 지역. 도성 중앙부의 안정된 토기',
+    fortune: '토기 → 안정·신뢰·기반 다지기' },
+
+  { name: '신라호텔', elements: ['토', '화'], type: 'hotel',
+    lat: 37.5548, lng: 127.0050, address: '서울특별시 중구 동호로 249',
+    fengshui: '중구 己丑(토) 지역 + 남산(화) 중턱. 배산임수 명당',
+    elementDetails: [
+      { element: '토', desc: '중구 己丑(토·토) 지역. 도성 중앙부의 안정된 토기', fortune: '토기 → 안정·신뢰·귀인운' },
+      { element: '화', desc: '남산(午방=화) 중턱에 위치. 주작 화기를 직접 받는 자리', fortune: '화기 → 명예·열정·표현력 회복' },
+    ],
+    fortune: '화생토(火生土) 상생 — 열정이 안정·신뢰의 기반으로 다져지는 명당' },
+
+  { name: '웨스틴 조선 서울', elements: ['토'], type: 'hotel',
+    lat: 37.5655, lng: 126.9780, address: '서울특별시 중구 소공로 106',
+    fengshui: '중구 己丑(토·토) 지역. 100년 역사 터 기운 응축, 토기 두터움',
+    fortune: '토기 → 안정·전통·부동산운' },
+
+  // ═══════════ 호텔: 金 ═══════════
+  { name: '포시즌스 서울', elements: ['금'], type: 'hotel',
+    lat: 37.5770, lng: 126.9762, address: '서울특별시 종로구 새문안로 97',
+    fengshui: '종로구 庚申(금) 지역. 북악산 정기 직수, 경복궁 앞 금기',
+    fortune: '금기 → 재물 축적·결단력·권위 강화' },
+
+  // ═══════════ 호텔: 火 ═══════════
+  { name: '파크 하얏트 서울', elements: ['화'], type: 'hotel',
+    lat: 37.5085, lng: 127.0390, address: '서울특별시 강남구 테헤란로 606',
+    fengshui: '강남구 壬午(화) 지역. 巳방 화기 집중, 활발한 상업 에너지',
+    fortune: '화기 → 명예·인기·표현력 상승' },
+
+  { name: '그랜드 하얏트 서울', elements: ['화'], type: 'hotel',
+    lat: 37.5393, lng: 127.0010, address: '서울특별시 용산구 소월로 322',
+    fengshui: '남산 중턱 위치. 남산=午방(정남)=주작=화 방위. 화기를 직접 받는 자리',
+    fortune: '화기 → 명예·열정·창의력 회복' },
+
+  { name: '인터컨티넨탈 서울 코엑스', elements: ['화', '금'], type: 'hotel',
+    lat: 37.5085, lng: 127.0590, address: '서울특별시 강남구 봉은사로 524',
+    fengshui: '강남구 壬午(화) 지역. 봉은사와 같은 블록, 삼성동 금융·상업 에너지 집중',
+    elementDetails: [
+      { element: '화', desc: '강남 壬午(화) 지역. 남방 화기와 활발한 상업 에너지', fortune: '화기 → 명예·인기·표현력 상승' },
+      { element: '금', desc: '삼성동 금융·상업 중심부. 코엑스·무역센터의 재물 에너지', fortune: '금기 → 재물 축적·결단력 강화' },
+    ],
+    fortune: '화극금(火剋金) 긴장 — 열정과 결단이 서로 벼리며 만드는 균형의 터' },
+
+  // ═══════════ 호텔: 木 ═══════════
+  { name: 'JW 메리어트 동대문', elements: ['목'], type: 'hotel',
+    lat: 37.5710, lng: 127.0093, address: '서울특별시 종로구 청계천로 279',
+    fengshui: '동대문 乙卯(목·목) 지역. 동쪽 흥인지문(仁=목) 기운. 전 체계 만장일치 목기',
+    fortune: '목기 → 새출발·추진력·성장운' },
+
+  // ═══════════ 호텔: 水 ═══════════
+  { name: '콘래드 서울', elements: ['수'], type: 'hotel',
+    lat: 37.5249, lng: 126.9265, address: '서울특별시 영등포구 국제금융로 10',
+    fengshui: '여의도 수기 지역. 한강 직면, IFC 금융 중심부',
+    fortune: '수기 → 인맥·소통·유동적 재물(투자) 활성화' },
+
+  // ═══════════ 호텔: 복합 ═══════════
+  { name: '롯데호텔 월드', elements: ['목', '토'], type: 'hotel',
+    lat: 37.5112, lng: 127.0981, address: '서울특별시 송파구 올림픽로 240',
+    fengshui: '송파구 乙未(목·토) 지역. 목기와 토기가 공존하는 복합 기운',
+    elementDetails: [
+      { element: '목', desc: '송파구 乙(목) 기운. 성장하려는 추진 에너지', fortune: '목기 → 새출발·추진력·성장' },
+      { element: '토', desc: '송파구 未(토) 기운. 안정하려는 기반 에너지', fortune: '토기 → 안정·신뢰·기반 다지기' },
+    ],
+    fortune: '목극토(木剋土) 긴장 — 도전 속에서도 기반을 잃지 않는 균형의 터' },
+
+  { name: '몬드리안 서울 이태원', elements: ['토'], type: 'hotel',
+    lat: 37.5340, lng: 126.9870, address: '서울특별시 용산구 장문로 23',
+    fengshui: '용산구 戊辰(토·토) 지역. 이태원 일대의 안정된 토기',
+    fortune: '토기 → 안정·신뢰·부동산운' },
+
+  { name: '그랜드 워커힐 서울', elements: ['목', '수'], type: 'hotel',
+    lat: 37.5505, lng: 127.1050, address: '서울특별시 광진구 워커힐로 177',
+    fengshui: '아차산(동=목) 배산 + 한강(수) 임수. 배산임수 전형',
+    elementDetails: [
+      { element: '목', desc: '아차산(동방=목) 배산. 동쪽 산의 성장·건강 기운을 등에 짐', fortune: '목기 → 건강·성장·추진력' },
+      { element: '수', desc: '한강 임수. 대하(大河)의 수기를 정면에서 받는 자리', fortune: '수기 → 인맥·지혜·재물 흐름' },
+    ],
+    fortune: '수생목(水生木) 상생 — 지혜와 인맥이 성장의 밑거름이 되는 배산임수 명당' },
+];
+
+// ── 지도 초기화 ──
+const map = L.map('map', {
+  center: [37.545, 127.00],
+  zoom: 12,
+  zoomControl: false,
+});
+
+// 줌 컨트롤 삭제 (핀치 줌은 유지)
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  maxZoom: 18,
+}).addTo(map);
+
+// ═══════════ 구 단위 오행 데이터 ═══════════
+const districts = [
+  { name: '종로구', element: '금', lat: 37.5735, lng: 126.9790,
+    reason: '인왕산(우백호)의 금기가 서쪽을 감싸고, 돈의문(서문=금·의)이 자리했던 곳. 북악산 아래 도성의 핵심부이나, 화강암 바위산 인왕산의 금 기운이 특히 강한 편이에요.',
+    dongs: [
+      { name: '부암동', element: '금', desc: '인왕산·북악산 사이 바위 골짜기. 付岩(바위에 기댄 마을)이라는 이름처럼 암석 지형의 금 기운이 강한 편', highlight: true },
+      { name: '삼청동', element: '목', desc: '북악산 동남 기슭 울창한 골짜기. 청룡(동쪽=목) 산줄기가 감싸는 형국' },
+      { name: '세종로 일대', element: '토', desc: '경복궁·광화문이 자리한 서울 정중앙 축. 풍수상 혈(穴)에 해당하는 토 기운 응집지' },
+      { name: '인사동', element: '토', desc: '도성 안 중심부 평탄지. 북고남저 완만한 경사의 안정적인 토 기운' },
+    ]},
+  { name: '중구', element: '토', lat: 37.5641, lng: 126.9979,
+    reason: '서울 도성의 정중앙, 오행에서 중앙=토. 남산(안산)이 남쪽을 감싸는 형국이며, 남산은 둥근 능선의 토형산(土形山). 숭례문·남대문시장 등 교역의 중심지로 포용·집산의 토 기운이 강한 편이에요.',
+    dongs: [
+      { name: '회현동', element: '토', desc: '남산 서쪽 기슭 완만한 구릉지. 남산의 넉넉한 토 기운 아래 안정된 지형', highlight: true },
+      { name: '명동', element: '화', desc: '남산 북쪽 양지바른 남향 사면. 明禮坊에서 유래하여 禮=화의 의미가 담긴 곳' },
+      { name: '을지로', element: '수', desc: '청계천이 관통하는 저지대. 수맥을 따라 상업이 발달한 물길의 기운' },
+      { name: '필동', element: '화', desc: '남산 남사면에 바로 접한 동네. 관악산 화기가 가장 가까이 전달되는 위치' },
+    ]},
+  { name: '강남구', element: '수', lat: 37.4979, lng: 127.0276,
+    reason: '한강(북), 양재천(남), 탄천(동)의 삼수(三水)가 감싸는 형국. 풍수에서 물=재물이며, 서울에서 물로 가장 잘 감싸인 지역 중 하나. 세 물줄기가 합수하는 수기(水氣)의 땅이에요.',
+    dongs: [
+      { name: '삼성동', element: '수', desc: '양재천·탄천·한강 삼수(三水) 합수 지점. 풍수가들이 꼽는 대명당으로 수 기운이 극대화된 곳', highlight: true },
+      { name: '압구정동', element: '수', desc: '한강변 저지대. 狎鷗亭(갈매기와 벗하는 정자)이라는 물과 직결된 지명' },
+      { name: '대치동', element: '목', desc: '양재천변 녹지대가 발달한 구릉지. 동남쪽 위치로 목 기운이 강한 편' },
+      { name: '역삼동', element: '토', desc: '강남 중심부 평탄한 대지. 관악산 지맥 끝자락이 안정되게 머무는 형국' },
+    ]},
+  { name: '서초구', element: '목', lat: 37.4837, lng: 127.0324,
+    reason: '서초(瑞草)는 상서로운 풀이라는 뜻. 우면산을 주산으로 청계산·관악산 발원 수계와 함께 녹지·숲이 풍부한 지역. 무성한 초목과 생장의 기운이 강한 편이에요.',
+    dongs: [
+      { name: '서초동', element: '목', desc: '瑞草=상서로운 풀, 초목=목의 직접적 상징. 우면산 북사면 녹지가 발달한 곳', highlight: true },
+      { name: '반포동', element: '수', desc: '盤浦=넓은 포구. 한강과 바로 접한 저지대로 한강의 수기를 직접 받는 곳' },
+      { name: '양재동', element: '수', desc: '양재천 중심부 유역. 물줄기의 핵심 지점으로 수 기운이 강한 편' },
+      { name: '내곡동', element: '토', desc: '청계산 서쪽 기슭 분지형 지형. 산으로 둘러싸여 토 기운이 안정적' },
+    ]},
+  { name: '마포구', element: '수', lat: 37.5663, lng: 126.9014,
+    reason: '麻浦(삼을 실어 나르던 포구). 한강 북안을 따라 길게 펼쳐지고, 홍제천·불광천이 한강으로 합류하는 수계 중심지. 한강변 저지대가 넓어 수 기운이 강한 편이에요.',
+    dongs: [
+      { name: '합정동', element: '수', desc: '合井=물이 합쳐지는 우물. 양화나루가 있던 한강변 포구 마을', highlight: true },
+      { name: '망원동', element: '수', desc: '한강 범람원 저지대. 1990년대까지 상습 침수 지역으로 물과 밀접한 지형' },
+      { name: '연남동', element: '목', desc: '과거 연희숲이 있던 구릉지 남단. 녹지와 소규모 언덕이 어우러진 곳' },
+      { name: '상암동', element: '토', desc: '上岩=위쪽 바위. 난지도 매립지 위 인공 성토된 대지로 토 기운이 강한 편' },
+    ]},
+  { name: '용산구', element: '화', lat: 37.5326, lng: 126.9900,
+    reason: '남산의 남사면에 위치하여 관악산(화형산)의 화기를 정면으로 수용하는 지형. 龍山의 용(龍)은 동양 전통에서 화기와 연결되며, 남향 사면으로 일조량이 풍부해 화 기운이 강한 편이에요.',
+    dongs: [
+      { name: '이태원동', element: '화', desc: '남산 남사면 양지바른 언덕. 화기가 직접 내려오는 남향 경사지', highlight: true },
+      { name: '한남동', element: '금', desc: '남산 지맥이 좌우로 감싸는 형국. 금성체(둥근 산형)로 재물 관련 금 기운' },
+      { name: '용산동', element: '토', desc: '한강 북안 넓은 평탄지. 군사·교통 요충지로 안정적인 토 기운' },
+      { name: '서빙고동', element: '수', desc: '西氷庫=조선시대 얼음 창고. 한강에 직접 면한 수 기운의 역사적 맥락' },
+    ]},
+  { name: '송파구', element: '수', lat: 37.5148, lng: 127.1066,
+    reason: '한강(북), 탄천(서), 성내천(동) 삼면이 물로 둘러싸인 형국. 잠실은 행주형(배가 떠가는 형상) 명당. 松坡(소나무 언덕 나루터)라는 이름도 수계와 직결돼 수 기운이 강한 편이에요.',
+    dongs: [
+      { name: '잠실동', element: '수', desc: '원래 한강 가운데 섬(잠실도). 매립 전 사면이 물이었던 곳으로 수 기운이 극강', highlight: true },
+      { name: '방이동', element: '목', desc: '芳荑=향기로운 새싹. 올림픽공원 녹지와 인접하여 목 기운이 강한 편' },
+      { name: '석촌동', element: '토', desc: '石村=돌마을. 백제 고분군이 있는 오래된 정착지로 안정의 토 기운' },
+      { name: '문정동', element: '토', desc: '남한산에서 내려오는 구릉지 말단부. 산줄기 토기가 안착하는 안정된 대지' },
+    ]},
+  { name: '성동구', element: '목', lat: 37.5633, lng: 127.0371,
+    reason: '城東=도성의 동쪽. 동=목의 방위 원리에 정확히 부합. 응봉산(좌청룡 연장선)이 서쪽을 감싸고, 청계천·중랑천이 한강으로 합류하는 수구(水口) 지역. 좌청룡(목)의 기운이 강한 편이에요.',
+    dongs: [
+      { name: '성수동', element: '목', desc: '뚝섬 일대 녹지와 한강변 숲이 발달. 동쪽 방위의 목 기운과 성장·재생의 기운', highlight: true },
+      { name: '응봉동', element: '목', desc: '鷹峰(매봉우리) 자락 녹지 구릉지. 좌청룡 산줄기의 목 기운이 직접 전달' },
+      { name: '옥수동', element: '수', desc: '玉水=옥같이 맑은 물. 한강과 중랑천 합류 나루터로 수 기운이 강한 편' },
+      { name: '왕십리', element: '토', desc: '풍수 전설이 깃든 지명. 하천 퇴적 지형으로 토 기운이 강한 편' },
+    ]},
+  { name: '서대문구', element: '금', lat: 37.5791, lng: 126.9368,
+    reason: '인왕산(우백호=금) 서쪽에 위치하고, 안산(鞍山)이 구 중심부를 차지하는 산지 지형. 돈의문(서문)의 義=금=가을=서쪽 방위와 직결돼 금 기운이 강한 편이에요.',
+    dongs: [
+      { name: '현저동(독립문)', element: '금', desc: '인왕산과 안산 사이 바위 골짜기. 화강암 지형의 금 기운이 강한 곳', highlight: true },
+      { name: '연희동', element: '목', desc: '안산 서쪽 기슭 숲이 우거진 구릉지. 녹지가 어우러진 목 기운' },
+      { name: '홍제동', element: '수', desc: '弘濟川이 관통하는 골짜기. 인왕산 발원 수맥이 직접 흐르는 곳' },
+      { name: '북아현동', element: '토', desc: '阿峴=고개. 인왕산과 안산 사이 능선의 고갯마루, 안정된 구릉 지형' },
+    ]},
+  { name: '영등포구', element: '수', lat: 37.5264, lng: 126.8963,
+    reason: '한강·안양천·도림천·대방천 등 다수 하천이 합류하는 서남부 저지대. 여의도는 한강과 샛강이 사방으로 감싸는 수중섬(水中島) 형국으로 물의 기운이 극강한 편이에요.',
+    dongs: [
+      { name: '여의도동', element: '수', desc: '한강과 샛강에 사면이 둘러싸인 하중도. 환포·관쇄가 완벽한 수중 명당', highlight: true },
+      { name: '신길동', element: '수', desc: '도림천·대방천 합류 저지대. 물길이 교차하는 지형' },
+      { name: '영등포동', element: '토', desc: '永登浦=영원히 번성하는 포구. 하천 퇴적토가 두텁게 쌓인 충적 평야' },
+      { name: '당산동', element: '토', desc: '堂山=서낭당 언덕. 한강변 소규모 구릉지로 토속 안정의 기운' },
+    ]},
+];
+
+// 구 오행 색상 (반투명 채우기, 스트로크 없음)
+const DISTRICT_FILL = {
+  '목': 'rgba(45, 138, 78, 0.25)',
+  '화': 'rgba(232, 90, 79, 0.25)',
+  '토': 'rgba(242, 183, 5, 0.20)',
+  '금': 'rgba(212, 197, 169, 0.25)',
+  '수': 'rgba(107, 123, 141, 0.30)',
+};
+
+// 구 레이어
+let districtVisible = false;
+let districtLayer = L.layerGroup();
+let districtGeoLoaded = false;
+
+// 구 이름 → 데이터 매핑
+const districtMap = {};
+districts.forEach(d => districtMap[d.name] = d);
+
+// 구 이름 라벨도 추가
+const districtNameMap = {};
+
+// GeoJSON 로드 및 폴리곤 생성
+function loadDistrictGeo() {
+  if (districtGeoLoaded) return Promise.resolve();
+  return fetch('https://raw.githubusercontent.com/southkorea/seoul-maps/master/kostat/2013/json/seoul_municipalities_geo_simple.json')
+    .then(r => r.json())
+    .then(geojson => {
+      geojson.features.forEach(feature => {
+        const name = feature.properties.name;
+        const d = districtMap[name];
+        if (!d) return; // 10개 구만 처리
+
+        const fillColor = DISTRICT_FILL[d.element];
+        const emoji = ELEMENT_CONFIG[d.element].emoji;
+
+        // 폴리곤 오버레이
+        const poly = L.geoJSON(feature, {
+          style: {
+            fillColor: fillColor,
+            fillOpacity: 1,
+            stroke: false,
+            weight: 0,
+          },
+          interactive: true,
+          onEachFeature: function(f, layer) {
+            layer.on('click', () => showDistrictDetail(d));
+          }
+        });
+
+        // 구 이름 뱃지 라벨 (중앙에)
+        const elColor = ELEMENT_CONFIG[d.element].color;
+        const icon = L.divIcon({
+          className: 'district-marker',
+          html: `<div class="district-label" style="background:${elColor}; color:#fff;">${d.name}</div>`,
+          iconSize: [0, 0],
+          iconAnchor: [0, 0],
+        });
+
+        const label = L.marker([d.lat, d.lng], { icon, interactive: false });
+
+        // 개별 레이어로 저장
+        districtSubLayers.push({
+          name: d.name,
+          element: d.element,
+          polyLayer: poly,
+          labelLayer: label,
+        });
+      });
+      districtGeoLoaded = true;
+    });
+}
+
+function showDistrictDetail(d) {
+  const c = ELEMENT_CONFIG[d.element];
+  const dongsHtml = d.dongs.map(dong => {
+    const dc = ELEMENT_CONFIG[dong.element];
+    const highlightClass = dong.highlight ? ' dong-highlight' : '';
+    const highlightBadge = dong.highlight ? `<span class="dong-badge">기운이 강한 동</span>` : '';
+    return `<div class="dong-item${highlightClass}">
+      <div class="dong-header">
+        <span class="dong-emoji">${dc.emoji}</span>
+        <span class="dong-name">${dong.name}</span>
+        <span class="dong-element" style="color:${dc.color}">${dong.element}</span>
+        ${highlightBadge}
+      </div>
+      <div class="dong-desc">${dong.desc}</div>
+    </div>`;
+  }).join('');
+
+  const html = `
+    <div class="popup-content" style="padding:0;">
+      <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+        <span class="element-badge" style="background:${c.color}">${c.label}</span>
+        <span class="type-badge">구 단위 오행</span>
+      </div>
+      <h3 style="font-size:18px;font-weight:800;color:#111;margin-bottom:10px;">${d.name}</h3>
+      <p style="font-size:13px;color:#444;line-height:1.7;margin-bottom:16px;">${d.reason}</p>
+      <div class="dong-section">
+        <h3 class="dong-section-title">동네별 오행 기운</h3>
+        ${dongsHtml}
+      </div>
+    </div>`;
+
+  const overlay = document.getElementById('detailOverlay');
+  const sheet = document.getElementById('detailSheet');
+  const body = document.getElementById('detailBody');
+  body.innerHTML = html;
+  overlay.classList.add('active');
+  sheet.classList.add('active');
+  body.scrollTop = 0;
+}
+
+// ── 상태 ──
+let activeElement = 'all';
+let activeType = 'all';
+
+// ── 팝업 HTML 생성 ──
+function buildPopup(place) {
+  const isDual = place.elements.length > 1;
+
+  const badgesHtml = place.elements.map(el => {
+    const c = ELEMENT_CONFIG[el];
+    return `<span class="element-badge" style="background:${c.color}">${c.label}</span>`;
+  }).join('');
+
+  let bodyHtml = '';
+
+  if (isDual && place.elementDetails) {
+    place.elementDetails.forEach(d => {
+      const c = ELEMENT_CONFIG[d.element];
+      bodyHtml += `
+        <div class="element-card" style="background:${c.bg}; border-color:${c.color}">
+          <div class="el-header">
+            <span class="el-emoji">${c.emoji}</span>
+            <span style="color:${c.color}">${c.label}</span>
+          </div>
+          <div class="el-desc">${d.desc}</div>
+          <div class="el-fortune" style="color:${c.color}">${d.fortune}</div>
+        </div>`;
+    });
+
+    const rel = getRelation(place.elements[0], place.elements[1]);
+    if (rel) {
+      const relIcon = rel.type === 'sangsaeng' ? '✨' : '⚡';
+      const relLabel = rel.type === 'sangsaeng' ? '상생' : '긴장';
+      bodyHtml += `
+        <div class="relation-card ${rel.type}">
+          <div class="rel-header">${relIcon} ${relLabel} 관계</div>
+          <div class="rel-name">${rel.name}</div>
+          <div class="rel-desc">${rel.desc}</div>
+        </div>`;
+    }
+  } else {
+    bodyHtml = `
+      <div class="feng-shui">${place.fengshui}</div>
+      <div class="fortune">${place.fortune}</div>`;
+  }
+
+  return `
+    <div class="popup-content">
+      <div class="popup-badges">
+        ${badgesHtml}
+        <span class="type-badge">${TYPE_LABELS[place.type]}</span>
+      </div>
+      <h3>${place.name}</h3>
+      <div class="address"><span class="address-text">${place.address}</span><button class="copy-btn" onclick="copyAddress(this, '${place.address}')">주소복사</button></div>
+      ${isDual && place.elementDetails ? `<div class="feng-shui" style="margin-bottom:10px">${place.fengshui}</div>` : ''}
+      ${bodyHtml}
+    </div>`;
+}
+
+// ── 마커 생성 ──
+const markers = [];
+
+places.forEach((place, idx) => {
+  const primary = ELEMENT_CONFIG[place.elements[0]];
+  const isDual = place.elements.length > 1;
+  const emoji = ELEMENT_EMOJI[place.elements[0]];
+  const shapeClass = place.type;
+
+  let markerHtml;
+
+  if (isDual) {
+    const sec = ELEMENT_CONFIG[place.elements[1]];
+    markerHtml = `<div class="custom-marker dual ${shapeClass}" style="background: linear-gradient(135deg, ${primary.color} 50%, ${sec.color} 50%)"><span class="marker-emoji">${emoji}</span></div>`;
+  } else {
+    markerHtml = `<div class="custom-marker ${shapeClass}" style="background:${primary.color}"><span class="marker-emoji">${emoji}</span></div>`;
+  }
+
+  const size = isDual ? 40 : 36;
+  const anchor = isDual ? 20 : 18;
+
+  const icon = L.divIcon({
+    className: '',
+    html: markerHtml,
+    iconSize: [size, size],
+    iconAnchor: [anchor, anchor],
+    popupAnchor: [0, -20],
+  });
+
+  const marker = L.marker([place.lat, place.lng], { icon })
+    .bindPopup(buildPopup(place));
+
+  // 모바일에서는 팝업 대신 바텀시트
+  marker.on('click', function(e) {
+    if (window.innerWidth <= 768) {
+      e.target.closePopup();
+      openDetailSheet(place);
+    }
+  });
+
+  marker._elements = place.elements;
+  marker._type = place.type;
+  marker._placeIdx = idx;
+  marker.addTo(map);
+  markers.push(marker);
+});
+
+// ── 모바일 상세 바텀시트 ──
+const detailOverlay = document.getElementById('detailOverlay');
+const detailSheet = document.getElementById('detailSheet');
+const detailHandle = document.getElementById('detailHandle');
+const detailBody = document.getElementById('detailBody');
+
+function openDetailSheet(place) {
+  detailBody.innerHTML = buildPopup(place);
+  requestAnimationFrame(() => {
+    detailOverlay.classList.add('active');
+    detailSheet.classList.add('active');
+  });
+}
+
+function closeDetailSheet() {
+  detailSheet.classList.remove('active');
+  detailOverlay.classList.remove('active');
+}
+
+detailOverlay.addEventListener('click', closeDetailSheet);
+detailHandle.addEventListener('click', closeDetailSheet);
+
+// ── 보이는 마커에 맞춰 자동 줌 ──
+function fitToVisible() {
+  const visible = markers.filter(m => map.hasLayer(m));
+  if (visible.length === 0) return;
+  const group = L.featureGroup(visible);
+  map.fitBounds(group.getBounds(), {
+    paddingTopLeft: [40, 160],
+    paddingBottomRight: [40, 100],
+    maxZoom: 15,
+    animate: true,
+    duration: 0.5,
+  });
+}
+
+// ── 필터 로직 ──
+function applyFilters() {
+  markers.forEach(m => {
+    const elMatch = activeElement === 'all' || m._elements.includes(activeElement);
+    const typeMatch = activeType === 'all' || m._type === activeType;
+
+    if (elMatch && typeMatch) {
+      m.addTo(map);
+    } else {
+      map.removeLayer(m);
+    }
+  });
+  fitToVisible();
+  buildPanelList();
+
+  // 구 오버레이도 오행 필터에 연동
+  updateDistrictOverlay();
+}
+
+// 구별 개별 레이어 저장 (폴리곤 + 라벨)
+let districtSubLayers = []; // { name, element, polyLayer, labelLayer }
+
+function updateDistrictOverlay() {
+  // 타입이 호텔/사찰/명소면 구 오버레이 전부 숨김
+  if (activeType !== 'all' && activeType !== 'district') {
+    districtSubLayers.forEach(sl => {
+      if (map.hasLayer(sl.polyLayer)) map.removeLayer(sl.polyLayer);
+      if (map.hasLayer(sl.labelLayer)) map.removeLayer(sl.labelLayer);
+    });
+    districtVisible = false;
+    return;
+  }
+  // 전체 또는 지역 모드: 오행 필터에 맞는 구만 표시
+  loadDistrictGeo().then(() => {
+    districtSubLayers.forEach(sl => {
+      const show = (activeElement === 'all' || sl.element === activeElement);
+      if (show) {
+        if (!map.hasLayer(sl.polyLayer)) sl.polyLayer.addTo(map);
+        if (!map.hasLayer(sl.labelLayer)) sl.labelLayer.addTo(map);
+      } else {
+        if (map.hasLayer(sl.polyLayer)) map.removeLayer(sl.polyLayer);
+        if (map.hasLayer(sl.labelLayer)) map.removeLayer(sl.labelLayer);
+      }
+    });
+    districtVisible = true;
+  });
+}
+
+// 활성 버튼을 부모 스크롤 영역 중앙으로
+function scrollToCenter(btn) {
+  const row = btn.parentElement;
+  const left = btn.offsetLeft - row.offsetWidth / 2 + btn.offsetWidth / 2;
+  row.scrollTo({ left, behavior: 'smooth' });
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeElement = btn.dataset.element;
+    applyFilters();
+    scrollToCenter(btn);
+  });
+});
+
+document.querySelectorAll('.type-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeType = btn.dataset.type;
+
+    if (activeType === 'district') {
+      // 지역 모드: 장소 핀 숨기고 구 오버레이만 표시
+      markers.forEach(m => map.removeLayer(m));
+      updateDistrictOverlay();
+      const bp = document.getElementById('bottomPanel');
+      if (bp) bp.style.display = 'none';
+    } else {
+      // 전체/호텔/사찰/명소: 장소 핀 표시 + 구 오버레이는 updateDistrictOverlay가 판단
+      const bp = document.getElementById('bottomPanel');
+      if (bp) bp.style.display = '';
+      applyFilters();
+    }
+    scrollToCenter(btn);
+  });
+});
+
+// 초기 로드 시 활성 버튼 중앙 정렬
+document.querySelectorAll('.filter-row').forEach(row => {
+  const active = row.querySelector('.active');
+  if (active) {
+    const left = active.offsetLeft - row.offsetWidth / 2 + active.offsetWidth / 2;
+    row.scrollLeft = left;
+  }
+});
+
+// ═══════════ 하단 패널 로직 ═══════════
+
+const bottomPanel = document.getElementById('bottomPanel');
+const panelHandle = document.getElementById('panelHandle');
+const panelList = document.getElementById('panelList');
+const panelCount = document.getElementById('panelCount');
+// disclaimer removed — now using toast
+
+let panelOpen = false;
+
+panelHandle.addEventListener('click', () => {
+  panelOpen = !panelOpen;
+  bottomPanel.classList.toggle('collapsed', !panelOpen);
+  // toast already dismissed
+});
+
+function buildPanelList() {
+  // 필터 적용된 장소만
+  const filtered = places.filter(p => {
+    const elMatch = activeElement === 'all' || p.elements.includes(activeElement);
+    const typeMatch = activeType === 'all' || p.type === activeType;
+    return elMatch && typeMatch;
+  });
+
+  panelCount.textContent = filtered.length;
+
+  // 타입별 그룹핑
+  const grouped = {};
+  TYPE_ORDER.forEach(t => { grouped[t] = []; });
+  filtered.forEach(p => {
+    if (grouped[p.type]) grouped[p.type].push(p);
+  });
+
+  let html = '';
+
+  TYPE_ORDER.forEach(type => {
+    const group = grouped[type];
+    if (group.length === 0) return;
+
+    const shapeClass = 's-' + type;
+    html += `<div class="panel-group-header"><div class="gh-shape ${shapeClass}"></div>${TYPE_LABELS[type]} (${group.length})</div>`;
+
+    group.forEach(place => {
+      const idx = places.indexOf(place);
+      const primary = ELEMENT_CONFIG[place.elements[0]];
+      const isDual = place.elements.length > 1;
+
+      const badgesHtml = place.elements.map(el => {
+        const c = ELEMENT_CONFIG[el];
+        return `<span class="mini-badge" style="background:${c.color}">${c.emoji}</span>`;
+      }).join('');
+
+      // 단축 운세 (첫 줄만)
+      const shortFortune = place.fortune.split('—')[0].split('.')[0].trim();
+
+      // 관계 태그
+      let relTag = '';
+      if (isDual) {
+        const rel = getRelation(place.elements[0], place.elements[1]);
+        if (rel) {
+          const label = rel.type === 'sangsaeng' ? '✨ 상생' : '⚡ 긴장';
+          relTag = `<span class="panel-item-rel ${rel.type}">${label}</span>`;
+        }
+      }
+
+      const iconBg = isDual
+        ? `linear-gradient(135deg, ${primary.color} 50%, ${ELEMENT_CONFIG[place.elements[1]].color} 50%)`
+        : primary.color;
+
+      html += `
+        <div class="panel-item" data-idx="${idx}">
+          <div class="panel-item-icon" style="background:${iconBg}">${ELEMENT_EMOJI[place.elements[0]]}</div>
+          <div class="panel-item-body">
+            <div class="panel-item-top">
+              <span class="panel-item-name">${place.name}</span>
+              <div class="panel-item-badges">${badgesHtml}</div>
+              ${relTag}
+            </div>
+            <div class="panel-item-fortune">${shortFortune}</div>
+          </div>
+          <div class="panel-item-arrow">›</div>
+        </div>`;
+    });
+  });
+
+  panelList.innerHTML = html;
+
+  // 클릭 이벤트
+  panelList.querySelectorAll('.panel-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const idx = parseInt(item.dataset.idx);
+      const place = places[idx];
+      const marker = markers[idx];
+
+      map.flyTo([place.lat, place.lng], 15, { duration: 0.8 });
+
+      // 패널 접기
+      panelOpen = false;
+      bottomPanel.classList.add('collapsed');
+      // toast already dismissed
+
+      // 모바일이면 바텀시트, 데스크톱이면 팝업
+      if (window.innerWidth <= 768) {
+        setTimeout(() => { openDetailSheet(place); }, 500);
+      } else {
+        setTimeout(() => { marker.openPopup(); }, 400);
+      }
+    });
+  });
+}
+
+// ── 주소 복사 ──
+function copyAddress(btn, address) {
+  navigator.clipboard.writeText(address).then(() => {
+    btn.textContent = '복사됨!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '주소복사';
+      btn.classList.remove('copied');
+    }, 1500);
+  });
+}
+
+// 초기 렌더
+buildPanelList();
+fitToVisible();
+
+// 초기 로드 시 구 오버레이도 표시
+updateDistrictOverlay();
+
+// ═══════════ 안내 토스트 (3초 후 자동 사라짐) ═══════════
+setTimeout(() => {
+  document.getElementById('disclaimerToast').classList.add('hidden');
+}, 3000);
+
+// ═══════════ 바텀 네비게이션 ═══════════
+const bottomNav = document.getElementById('bottomNav');
+const mapWrapper = document.querySelector('.map-wrapper');
+const calendarPage = document.getElementById('calendarPage');
+const settingsPage = document.getElementById('settingsPage');
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    const page = item.dataset.page;
+    mapWrapper.style.display = 'none';
+    calendarPage.classList.remove('active');
+    settingsPage.classList.remove('active');
+
+    if (page === 'map') {
+      mapWrapper.style.display = '';
+      setTimeout(() => map.invalidateSize(), 100);
+    } else if (page === 'calendar') {
+      calendarPage.classList.add('active');
+      renderCalendar();
+    } else if (page === 'settings') {
+      settingsPage.classList.add('active');
+    }
+  });
+});
+
+// ═══════════ 천간·지지 계산 ═══════════
+const TIAN_GAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const DI_ZHI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const TIAN_GAN_KR = ['갑','을','병','정','무','기','경','신','임','계'];
+const DI_ZHI_KR = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+
+const GAN_ELEMENT = ['목','목','화','화','토','토','금','금','수','수'];
+const ZHI_ELEMENT = ['수','토','목','목','토','화','화','토','금','금','토','수'];
+
+const ELEMENT_COLORS = {
+  목: '#2d6a4f', 화: '#c1121f', 토: '#b08c2a', 금: '#888', 수: '#1d4e89',
+};
+
+const HANJA_MAP = { 목: '木', 화: '火', 토: '土', 금: '金', 수: '水' };
+
+// 기준일: 2026-03-25 = 丙申(병신) — 한국천문연구원 검증
+const REF_DATE = new Date(2026, 2, 25);
+const REF_GAN = 2;  // 丙=2
+const REF_ZHI = 8;  // 申=8
+
+function getDayGanZhi(year, month, day) {
+  const target = new Date(year, month, day);
+  const diff = Math.round((target - REF_DATE) / 86400000);
+  const ganIdx = ((REF_GAN + diff) % 10 + 10) % 10;
+  const zhiIdx = ((REF_ZHI + diff) % 12 + 12) % 12;
+  return {
+    gan: TIAN_GAN[ganIdx], zhi: DI_ZHI[zhiIdx],
+    ganKr: TIAN_GAN_KR[ganIdx], zhiKr: DI_ZHI_KR[zhiIdx],
+    ganElement: GAN_ELEMENT[ganIdx], zhiElement: ZHI_ELEMENT[zhiIdx],
+  };
+}
+
+function getElementDesc(el) {
+  return {
+    목: '성장·추진력·건강 — 새로운 시작과 생명력의 기운',
+    화: '명예·열정·표현력 — 빛나는 에너지와 활력의 기운',
+    토: '안정·신뢰·기반 — 중심을 잡아주는 든든한 기운',
+    금: '재물·결단력·권위 — 날카로운 판단과 수확의 기운',
+    수: '지혜·소통·인맥 — 유연한 흐름과 지혜의 기운',
+  }[el] || '';
+}
+
+const ELEMENT_ADVICE = {
+  목: [
+    '새로운 계획을 세우거나, 자연 속에서 산책하기 좋은 날이에요.',
+    '성장과 시작의 기운이 강해요. 미뤄둔 일을 시작해보세요.',
+    '나무처럼 뻗어가는 에너지. 운동이나 야외 활동이 특히 좋아요.',
+  ],
+  화: [
+    '표현력이 빛나는 날. 발표나 미팅에 유리해요.',
+    '열정이 불타오르는 날. 창작 활동이나 자기 PR에 좋아요.',
+    '사람들과의 교류에서 빛이 나는 날. 적극적으로 나서보세요.',
+  ],
+  토: [
+    '안정과 신뢰가 키워드. 기반을 다지는 일에 좋은 날이에요.',
+    '마음을 가라앉히고 중심을 잡기 좋은 날. 명상이나 정리가 어울려요.',
+    '꾸준함이 빛을 발하는 날. 장기적인 계획을 점검해보세요.',
+  ],
+  금: [
+    '결단을 내리기 좋은 날. 중요한 결정을 내려보세요.',
+    '날카로운 직감이 살아나는 날. 판단력을 믿어도 좋아요.',
+    '정리와 마무리에 힘이 실리는 날. 미뤄둔 결정을 처리해보세요.',
+  ],
+  수: [
+    '소통과 인맥의 날. 네트워킹이나 학습에 좋아요.',
+    '유연한 사고가 빛나는 날. 아이디어가 잘 떠올라요.',
+    '흐르는 물처럼 유연하게. 고집보다는 적응이 유리한 날이에요.',
+  ],
+};
+
+function getElementAdvice(el, date) {
+  const arr = ELEMENT_ADVICE[el] || ELEMENT_ADVICE['목'];
+  const dayOfYear = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+  return arr[dayOfYear % arr.length];
+}
+
+function getRecommendPlaces(el) {
+  return places.filter(p => p.elements.includes(el)).slice(0, 3).map(p => p.name);
+}
+
+// ═══════════ 캘린더 렌더링 ═══════════
+let calYear, calMonth, calWeekStart, selectedDate, calView = 'week';
+
+function initCalendar() {
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  selectedDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  // 이번 주 일요일
+  calWeekStart = new Date(now);
+  calWeekStart.setDate(now.getDate() - now.getDay());
+}
+initCalendar();
+
+function renderCalendar() {
+  if (calView === 'week') renderWeekView();
+  else renderMonthView();
+  renderDayDetail(selectedDate);
+}
+
+function renderTodaySummary() {
+  const now = new Date();
+  const gz = getDayGanZhi(now.getFullYear(), now.getMonth(), now.getDate());
+  const ganC = ELEMENT_CONFIG[gz.ganElement];
+  const zhiC = ELEMENT_CONFIG[gz.zhiElement];
+  let relText = '';
+  if (gz.ganElement !== gz.zhiElement) {
+    const rel = getRelation(gz.ganElement, gz.zhiElement);
+    if (rel) relText = ` · ${rel.type === 'sangsaeng' ? '✨상생' : '⚡긴장'}`;
+  }
+  document.getElementById('todaySummary').innerHTML = `
+    <div class="ts-top">
+      <span class="ts-ganji">${gz.gan}${gz.zhi}</span>
+      <span class="ts-kr">(${gz.ganKr}${gz.zhiKr})</span>
+    </div>
+    <div class="ts-elements">
+      <span class="ts-el" style="color:${ganC.color}">${ganC.emoji} ${HANJA_MAP[gz.ganElement]}(${gz.ganElement})</span>
+      <span style="color:#555">+</span>
+      <span class="ts-el" style="color:${zhiC.color}">${zhiC.emoji} ${HANJA_MAP[gz.zhiElement]}(${gz.zhiElement})</span>
+    </div>
+    <div class="ts-desc">오늘은 ${gz.ganElement}기와 ${gz.zhiElement}기가 함께하는 날${relText}</div>
+  `;
+}
+
+function renderWeekView() {
+  const now = new Date();
+  const ws = new Date(calWeekStart);
+  const we = new Date(ws); we.setDate(ws.getDate() + 6);
+  const weekNum = Math.ceil(ws.getDate() / 7);
+  document.getElementById('navLabel').textContent = `${ws.getFullYear()}년 ${ws.getMonth()+1}월 ${weekNum}째주`;
+
+  let html = '';
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(ws); d.setDate(ws.getDate() + i);
+    const gz = getDayGanZhi(d.getFullYear(), d.getMonth(), d.getDate());
+    const isToday = d.toDateString() === now.toDateString();
+    const isSel = d.toDateString() === selectedDate.toDateString();
+    const ganColor = ELEMENT_COLORS[gz.ganElement];
+    const zhiColor = ELEMENT_COLORS[gz.zhiElement];
+    const cls = ['cal-day'];
+    if (isToday) cls.push('today');
+    if (isSel) cls.push('selected');
+    html += `<div class="${cls.join(' ')}" data-ts="${d.getTime()}">
+      <span class="day-num">${d.getDate()}</span>
+      <div class="day-dots">
+        <div class="day-dot" style="background:${ganColor}"></div>
+        <div class="day-dot" style="background:${zhiColor}"></div>
+      </div>
+    </div>`;
+  }
+  document.getElementById('calDays').innerHTML = html;
+  bindDayClicks();
+}
+
+function renderMonthView() {
+  const now = new Date();
+  document.getElementById('navLabel').textContent = `${calYear}년 ${calMonth + 1}월`;
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+  let html = '';
+
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const d = daysInPrev - i;
+    const pm = calMonth === 0 ? 11 : calMonth - 1;
+    const py = calMonth === 0 ? calYear - 1 : calYear;
+    const gz = getDayGanZhi(py, pm, d);
+    html += buildDayCell(new Date(py, pm, d), gz, true);
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(calYear, calMonth, d);
+    const gz = getDayGanZhi(calYear, calMonth, d);
+    html += buildDayCell(date, gz, false);
+  }
+  const totalCells = firstDay + daysInMonth;
+  const rem = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let d = 1; d <= rem; d++) {
+    const nm = calMonth === 11 ? 0 : calMonth + 1;
+    const ny = calMonth === 11 ? calYear + 1 : calYear;
+    const gz = getDayGanZhi(ny, nm, d);
+    html += buildDayCell(new Date(ny, nm, d), gz, true);
+  }
+
+  document.getElementById('calDays').innerHTML = html;
+  bindDayClicks();
+}
+
+function buildDayCell(date, gz, isOther) {
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+  const isSel = date.toDateString() === selectedDate.toDateString();
+  const cls = ['cal-day'];
+  if (isOther) cls.push('other-month');
+  if (isToday) cls.push('today');
+  if (isSel) cls.push('selected');
+  return `<div class="${cls.join(' ')}" data-ts="${date.getTime()}">
+    <span class="day-num">${date.getDate()}</span>
+    <div class="day-dots">
+      <div class="day-dot" style="background:${ELEMENT_COLORS[gz.ganElement]}"></div>
+      <div class="day-dot" style="background:${ELEMENT_COLORS[gz.zhiElement]}"></div>
+    </div>
+  </div>`;
+}
+
+function bindDayClicks() {
+  document.querySelectorAll('.cal-day:not(.other-month)').forEach(cell => {
+    cell.addEventListener('click', () => {
+      selectedDate = new Date(parseInt(cell.dataset.ts));
+      document.querySelectorAll('.cal-day').forEach(c => c.classList.remove('selected'));
+      cell.classList.add('selected');
+      renderDayDetail(selectedDate);
+    });
+  });
+}
+
+function renderDayDetail(date) {
+  const gz = getDayGanZhi(date.getFullYear(), date.getMonth(), date.getDate());
+  const ganC = ELEMENT_CONFIG[gz.ganElement];
+  const zhiC = ELEMENT_CONFIG[gz.zhiElement];
+  const dateStr = `${date.getFullYear()}년 ${date.getMonth()+1}월 ${date.getDate()}일`;
+
+  // 오행별 해석 섹션
+  let sectionsHtml = `
+    <div class="dd-section" style="background:${ganC.bg}15; border-color:${ganC.color}">
+      <div class="dd-sec-title" style="color:${ganC.color}">${ganC.emoji} 천간 — ${HANJA_MAP[gz.ganElement]}(${gz.ganElement})</div>
+      <div class="dd-sec-body">${getElementDesc(gz.ganElement)}</div>
+    </div>
+    <div class="dd-section" style="background:${zhiC.bg}15; border-color:${zhiC.color}">
+      <div class="dd-sec-title" style="color:${zhiC.color}">${zhiC.emoji} 지지 — ${HANJA_MAP[gz.zhiElement]}(${gz.zhiElement})</div>
+      <div class="dd-sec-body">${getElementDesc(gz.zhiElement)}</div>
+    </div>`;
+
+  // 상생/상극 관계
+  let relHtml = '';
+  if (gz.ganElement !== gz.zhiElement) {
+    const rel = getRelation(gz.ganElement, gz.zhiElement);
+    if (rel) {
+      const icon = rel.type === 'sangsaeng' ? '✨' : '⚡';
+      const label = rel.type === 'sangsaeng' ? '상생' : '긴장';
+      relHtml = `<div class="dd-relation ${rel.type}">
+        ${icon} ${label} — ${rel.name}<br>
+        <span style="font-weight:400;font-size:12px">${rel.desc}</span>
+      </div>`;
+    }
+  }
+
+  // 추천 장소
+  const recPlaces = [...new Set([...getRecommendPlaces(gz.ganElement), ...getRecommendPlaces(gz.zhiElement)])].slice(0, 3);
+  let recHtml = '';
+  if (recPlaces.length > 0) {
+    const elNames = [...new Set([gz.ganElement, gz.zhiElement])].map(e => `${HANJA_MAP[e]}(${e})기`).join('와 ');
+    recHtml = `<div class="dd-recommend">
+      <div class="rec-title">${elNames}를 채울 수 있는 곳</div>
+      <div style="font-size:11px;color:#777;margin-bottom:8px;line-height:1.5">이 날의 기운과 같은 오행을 가진 장소예요. 방문하면 해당 기운을 더 깊이 느낄 수 있어요.</div>
+      ${recPlaces.map(n => `<div class="rec-item">${n}</div>`).join('')}
+    </div>`;
+  }
+
+  const detail = document.getElementById('dayDetail');
+  detail.innerHTML = `
+    <div class="dd-date">${dateStr}</div>
+    <div class="dd-ganji">${gz.gan}${gz.zhi}</div>
+    <div class="dd-kr">(${gz.ganKr}${gz.zhiKr})</div>
+    <div class="dd-elements">
+      <div class="dd-el" style="color:${ganC.color}">${ganC.emoji} ${HANJA_MAP[gz.ganElement]}(${gz.ganElement})</div>
+      <span style="color:#555">+</span>
+      <div class="dd-el" style="color:${zhiC.color}">${zhiC.emoji} ${HANJA_MAP[gz.zhiElement]}(${gz.zhiElement})</div>
+    </div>
+    <div style="text-align:center;font-size:13px;color:#999;line-height:1.7;margin-bottom:16px">${getElementAdvice(gz.ganElement, date)}</div>
+    ${sectionsHtml}
+    ${relHtml}
+    ${recHtml}
+  `;
+  detail.classList.add('active');
+}
+
+// 주/월 토글
+document.querySelectorAll('.view-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    calView = btn.dataset.view;
+    renderCalendar();
+  });
+});
+
+// 네비게이션 (이전/다음)
+document.getElementById('prevNav').addEventListener('click', () => {
+  if (calView === 'week') {
+    calWeekStart.setDate(calWeekStart.getDate() - 7);
+  } else {
+    calMonth--;
+    if (calMonth < 0) { calMonth = 11; calYear--; }
+  }
+  renderCalendar();
+});
+
+document.getElementById('nextNav').addEventListener('click', () => {
+  if (calView === 'week') {
+    calWeekStart.setDate(calWeekStart.getDate() + 7);
+  } else {
+    calMonth++;
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+  }
+  renderCalendar();
+});
+
+// ═══════════ 설정: 홈 화면 추가 ═══════════
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
+const installOverlay = document.getElementById('installOverlay');
+const installModal = document.getElementById('installModal');
+const installBody = document.getElementById('installBody');
+const installClose = document.getElementById('installClose');
+
+document.getElementById('installBtn').addEventListener('click', () => {
+  // Android: 네이티브 설치 프롬프트
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+    return;
+  }
+
+  // iOS/Android 탭 안내
+  installBody.innerHTML = `
+    <div class="install-tabs">
+      <button class="install-tab active" data-os="ios">iPhone (Safari)</button>
+      <button class="install-tab" data-os="android">Android (Chrome)</button>
+    </div>
+    <div class="install-guide" id="installGuideIos">
+      <div class="step"><div class="step-num">1</div><div class="step-text">Safari 하단의 <strong>공유 버튼</strong>(⬆️)을 탭하세요</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text">메뉴에서 <strong>"홈 화면에 추가"</strong>를 탭하세요</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text"><strong>"추가"</strong>를 탭하면 홈 화면에 앱 아이콘이 생겨요</div></div>
+    </div>
+    <div class="install-guide" id="installGuideAndroid" style="display:none">
+      <div class="step"><div class="step-num">1</div><div class="step-text">Chrome 우측 상단 <strong>점 세개(⋮)</strong>를 탭하세요</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text"><strong>"홈 화면에 추가"</strong>를 탭하세요</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text"><strong>"추가"</strong>를 탭하면 완료!</div></div>
+    </div>`;
+
+  installBody.querySelectorAll('.install-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      installBody.querySelectorAll('.install-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('installGuideIos').style.display = tab.dataset.os === 'ios' ? '' : 'none';
+      document.getElementById('installGuideAndroid').style.display = tab.dataset.os === 'android' ? '' : 'none';
+    });
+  });
+
+  installOverlay.classList.add('active');
+  requestAnimationFrame(() => installModal.classList.add('active'));
+});
+
+function closeInstallModal() {
+  installModal.classList.remove('active');
+  installOverlay.classList.remove('active');
+}
+installClose.addEventListener('click', closeInstallModal);
+installOverlay.addEventListener('click', closeInstallModal);
+
+// ═══════════ 설정: 문의하기 ═══════════
+document.getElementById('contactBtn').addEventListener('click', () => {
+  window.location.href = 'mailto:zeroro8888@gmail.com?subject=[오행가이드] 제안/문의';
+});
+
+</script>
+</body>
+</html>
