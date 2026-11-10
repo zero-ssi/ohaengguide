@@ -29,10 +29,10 @@
   gtag('config', 'G-QYNN6FBRVE');
 </script>
 
-<title>오행이 | 서울 오행·풍수 명당 지도와 오늘의 일진</title>
+<title>오행이 | 오늘의 운세·오늘 일진, 부족한 오행 채우는 서울 명당</title>
 <!-- SEO 기본 -->
-<meta name="description" content="나에게 부족한 오행(목·화·토·금·수), 서울에서 채워요. 호텔·사찰·명소 37곳을 오행과 풍수로 분류한 지도와 매일 바뀌는 오늘의 일진 캘린더를 무료로 확인하세요.">
-<meta name="keywords" content="오행이, 오행가이드, 오행, 오행 지도, 부족한 오행, 오행 보완, 사주 오행, 오늘의 일진, 오늘 일진, 일진 달력, 60갑자, 풍수지리, 서울 풍수, 서울 명당, 서울 기운 좋은 곳, 목화토금수, 서울 사찰, 서울 호텔, 서울 명소">
+<meta name="description" content="오늘의 운세, 오늘 일진(60갑자)을 매일 확인하고 내 일간·사주에 부족한 오행(목·화·토·금·수)을 서울 명당에서 채워요. 기운 좋은 호텔·사찰·명소 37곳 오행 지도.">
+<meta name="keywords" content="오행이, 오늘의 운세, 오늘 운세, 오늘 일진, 오늘의 일진, 일진 달력, 일간, 일간별 운세, 일주, 사주, 오늘사주, 사주 오행, 부족한 오행, 오행 채우기, 오행 보완, 오행 과다, 명당, 서울 명당, 기운 좋은 곳, 서울 기운 좋은 곳, 개운, 풍수지리, 서울 풍수, 60갑자, 목화토금수, 오행가이드">
 <meta name="author" content="오행이">
 <meta name="robots" content="index, follow, max-image-preview:large, noai, noimageai">
 <meta name="format-detection" content="telephone=no">
@@ -44,8 +44,8 @@
 <!-- Open Graph (카카오톡·페이스북·네이버 공유 미리보기) -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="오행이">
-<meta property="og:title" content="오행이 — 나에게 부족한 오행, 서울에서 채워요">
-<meta property="og:description" content="서울 오행·풍수 명당 37곳 지도와 오늘의 일진 캘린더">
+<meta property="og:title" content="오행이 — 오늘의 운세와 부족한 오행 채우는 서울 명당">
+<meta property="og:description" content="오늘 일진·일간 운세 확인하고, 내게 부족한 오행을 서울 명당 37곳에서 채워요">
 <meta property="og:url" content="https://zero-ssi.github.io/ohaengguide/">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:image" content="https://zero-ssi.github.io/ohaengguide/og-image.png">
@@ -54,8 +54,8 @@
 <meta property="og:image:alt" content="오행이 — 목·화·토·금·수 다섯 기운 캐릭터">
 <!-- 트위터(X) 카드 -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="오행이 — 나에게 부족한 오행, 서울에서 채워요">
-<meta name="twitter:description" content="서울 오행·풍수 명당 37곳 지도와 오늘의 일진 캘린더">
+<meta name="twitter:title" content="오행이 — 오늘의 운세와 부족한 오행 채우는 서울 명당">
+<meta name="twitter:description" content="오늘 일진·일간 운세 확인하고, 내게 부족한 오행을 서울 명당 37곳에서 채워요">
 <meta name="twitter:image" content="https://zero-ssi.github.io/ohaengguide/og-image.png">
 <!-- 구조화 데이터 (구글 리치 결과용) -->
 <script type="application/ld+json">
@@ -2259,6 +2259,37 @@
   .seo-fallback { max-width: 720px; margin: 0 auto; padding: 32px 20px; line-height: 1.7; }
   .seo-fallback h2 { margin-top: 28px; }
   .seo-fallback li { margin: 16px 0; list-style: none; }
+  /* ── 캘린더: 내 일간 필터 + 일간별 운세 ── */
+  .dm-filter-wrap { margin: 0 20px 12px; }
+  .dm-filter-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+  .dm-filter-head b { font-size: 14px; color: var(--ink); }
+  .dm-filter-head small { font-size: 12px; color: var(--sub); }
+  .dm-filter { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .dm-filter::-webkit-scrollbar { display: none; }
+  .dm-chip { flex-shrink: 0; display: flex; align-items: center; gap: 4px; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 6px 11px 6px 7px; font: 700 12.5px 'Pretendard', -apple-system, sans-serif; color: #4a4744; cursor: pointer; transition: all .25s var(--ease); }
+  .dm-chip .el-ic { width: 18px; height: 18px; }
+  .dm-chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .dm-chip.on .el-ic { animation: squash .5s var(--ease); }
+  .dm-fortune { margin: 0 20px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .dm-fortune:empty { display: none; }
+  .dmf-card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; animation: rowIn .45s var(--ease) both; }
+  .dmf-tag { align-self: flex-start; font-size: 12px; font-weight: 700; border-radius: 999px; padding: 4px 10px; background: var(--dmf-t); color: var(--dmf-c); }
+  .dmf-head { font-size: 19px; font-weight: 900; letter-spacing: -.5px; line-height: 1.38; color: var(--ink); }
+  .dmf-base { font-size: 12.5px; color: var(--sub); line-height: 1.6; }
+  .dmf-base b { color: var(--ink); }
+  .dmf-double { font-size: 12px; font-weight: 700; color: var(--dmf-c); }
+  .dmf-row { display: grid; grid-template-columns: 44px 1fr; gap: 8px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 11px 14px; animation: rowIn .45s var(--ease) both; }
+  .dmf-row em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--sub); }
+  .dmf-row p { font-size: 13.5px; line-height: 1.55; color: var(--ink); }
+  .dmf-row.no em { color: #c0573f; }
+  .dmf-fill { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 13px 16px; display: flex; flex-direction: column; gap: 9px; animation: rowIn .45s .15s var(--ease) both; }
+  .dmf-fill p { font-size: 13.5px; line-height: 1.5; color: var(--ink); display: flex; gap: 8px; align-items: center; }
+  .dmf-fill p .el-ic { width: 30px; height: 30px; }
+  .dmf-spots { display: flex; gap: 6px; flex-wrap: wrap; }
+  .dmf-spots button { display: flex; align-items: center; gap: 4px; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 5px 10px 5px 6px; font: 500 12px 'Pretendard', -apple-system, sans-serif; color: var(--ink); cursor: pointer; }
+  .dmf-spots .el-ic { width: 16px; height: 16px; }
+  .dmf-empty { font-size: 13px; color: var(--sub); background: #fff; border: 1px dashed var(--line); border-radius: 14px; padding: 14px 16px; text-align: center; }
+
 </style>
 </head>
 <body>
@@ -2352,6 +2383,13 @@
     <div class="leg-item"><div class="leg-dot" style="background:#888"></div>금</div>
     <div class="leg-item"><div class="leg-dot" style="background:#1d4e89"></div>수</div>
   </div>
+
+  <!-- 내 일간 필터 + 일간별 오늘의 운세 -->
+  <div class="dm-filter-wrap">
+    <div class="dm-filter-head"><b>내 일간</b><small>고르면 그날 나에게 강한 운을 알려드려요</small></div>
+    <div class="dm-filter" id="dmFilter"></div>
+  </div>
+  <div class="dm-fortune" id="dmFortune"></div>
 
   <!-- 선택된 날 상세 해석 -->
   <div class="day-detail" id="dayDetail"></div>
@@ -3637,6 +3675,87 @@ const relayout = () => map.invalidateSize();
 sideMQ.addEventListener ? sideMQ.addEventListener('change', () => { renderSide(); relayout(); }) : null;
 window.addEventListener('resize', relayout);
 setTimeout(relayout, 0);
+
+// ═══════════ 캘린더: 내 일간 필터 + 일간별 오늘의 운세 ═══════════
+const DM_NAMES = ['갑목','을목','병화','정화','무토','기토','경금','신금','임수','계수'];
+const ZHI_MAIN_GAN = [9,5,0,1,4,2,3,5,6,7,4,8]; // 지지 본기 천간 인덱스
+const EL5 = ['목','화','토','금','수'];
+const TEN_GOD_COPY = {
+  비견:{luck:'자기주도운',head:'내 페이스대로 밀어붙이면 되는 날이에요',work:'혼자 붙잡고 있던 일, 오늘 끝까지 마무리해 보세요',money:'지출은 평소대로. 같이 사는 물건은 각자 계산이 깔끔해요',people:'오래 본 친구·동료와 편하게 이야기하기 좋아요',no:'N빵 정산·공동 구매에서 서운한 말이 나오기 쉬워요',base:'내 고집과 체력이 받쳐주는'},
+  겁재:{luck:'경쟁운',head:'먼저 움직이는 사람이 가져가는 날이에요',work:'선착순·예약·지원서는 오늘 오전에 먼저 넣으세요',money:'충동구매가 잘 생겨요. 장바구니는 하루 묵혀두세요',people:'경쟁자가 보여도 정면승부보다 내 속도를 지키는 게 이득',no:'돈 빌려주기·보증은 오늘은 거절이 정답',base:'주변과 견주게 되는'},
+  식신:{luck:'먹을복·여유운',head:'맛있는 거 먹고 기분이 풀리는 날이에요',work:'하고 싶던 말은 부드럽게 꺼내면 잘 통해요',money:'나를 위한 작은 소비는 만족도가 높아요',people:'밥 약속·티타임 잡기 좋은 날, 분위기가 편안해요',no:'과식·야식 주의, 내일 컨디션에 바로 와요',base:'여유롭고 느긋한'},
+  상관:{luck:'표현·인기운',head:'말발이 서고 결과물이 눈에 띄는 날이에요',work:'발표·면접·포트폴리오·SNS 업로드에 강해요',money:'내 재주로 버는 돈(부업·판매)에 좋은 흐름',people:'고백·제안처럼 미뤄둔 말은 오늘 꺼내도 괜찮아요',no:'윗사람에게 직설, 홧김 댓글은 하루만 참기',base:'하고 싶은 말이 많아지는'},
+  편재:{luck:'재물운(기회)',head:'돈 되는 기회가 눈에 들어오는 날이에요',work:'영업·협상·새 거래처 연락은 오늘 해보세요',money:'중고거래·세일·부업처럼 움직이는 돈에 유리해요',people:'새로 만나는 사람이 뜻밖의 연결고리가 돼요',no:'큰 투자 몰빵·즉흥 결제는 한 번 더 생각',base:'돈과 기회에 촉이 서는'},
+  정재:{luck:'재물운(안정)',head:'들어올 돈이 정확히 들어오는 날이에요',work:'정산·견적·계약 금액 확인은 오늘 꼼꼼히',money:'환불 요청·가계부 정리·적금 자동이체 설정하기 좋아요',people:'약속을 지키면 신뢰가 확 쌓이는 날',no:'너무 아끼다 인색해 보이지 않게 커피 한 잔은 쏘기',base:'차분하게 챙기게 되는'},
+  편관:{luck:'직장운(돌파)',head:'일이 몰려도 하나만 확실히 끝내면 되는 날이에요',work:'급한 마감 하나에 집중하면 평가가 올라가요',money:'예상 못 한 지출(경조사·수리비)이 생길 수 있어요',people:'까다로운 사람은 짧고 정확하게 응대하는 게 답',no:'무리한 약속·밤샘은 내일로 이자 붙여 돌아와요',base:'긴장감과 압박이 깔린'},
+  정관:{luck:'직장운·연애운',head:'성실함이 인정받는 날이에요',work:'보고·결재·공식 메일은 오늘 보내면 잘 받아들여져요',money:'월급·고정 수입처럼 정해진 돈 관리에 좋아요',people:'호감 있는 사람에게 정중하게 다가가면 좋은 인상',no:'규칙 어기기·지각은 오늘 유난히 크게 보여요',base:'예의와 체면을 챙기게 되는'},
+  편인:{luck:'직감·아이디어운',head:'촉이 좋은 날, 혼자 생각할 시간을 가지세요',work:'새 툴 배우기·기획 아이디어 메모에 좋아요',money:'정보를 더 알아보고 결제하면 손해를 줄여요',people:'사람 많은 자리보다 1:1 대화가 편해요',no:'계획을 자꾸 바꾸면 하루가 흩어져요',base:'생각이 많아지고 예민한'},
+  정인:{luck:'시험·문서운',head:'도움을 받고 서류가 잘 풀리는 날이에요',work:'계약·신청서·자격증 공부, 오늘 처리하면 매끄러워요',money:'지원금·혜택·포인트처럼 받을 수 있는 걸 챙기세요',people:'선배·부모님께 조언 구하면 좋은 답이 와요',no:'다 해줄 거라 기대고만 있으면 타이밍을 놓쳐요',base:'보살핌과 배움이 있는'},
+};
+function tenGodOf(dm, g) {
+  const a = Math.floor(dm / 2), b = Math.floor(g / 2), same = (dm % 2) === (g % 2), r = (b - a + 5) % 5;
+  return [same ? '비견' : '겁재', same ? '식신' : '상관', same ? '편재' : '정재', same ? '편관' : '정관', same ? '편인' : '정인'][r];
+}
+function fillElementOf(dm, g) {
+  const a = Math.floor(dm / 2), b = Math.floor(g / 2), r = (b - a + 5) % 5;
+  const off = {0:1, 1:4, 2:0, 3:4, 4:2}[r];
+  const why = {0:'넘치는 내 기운을 밖으로 풀어줄', 1:'쓴 만큼 채워줄', 2:'버틸 힘을 보태줄', 3:'압박을 부드럽게 풀어줄', 4:'생각을 행동으로 옮기게 해줄'}[r];
+  return { el: EL5[(a + off) % 5], why };
+}
+let myDm = null;
+try { const v = localStorage.getItem('ohaengi_dm'); if (v !== null && v !== '') myDm = +v; } catch (e) {}
+const dmFilterEl = document.getElementById('dmFilter');
+const dmFortuneEl = document.getElementById('dmFortune');
+function renderDmFilter() {
+  dmFilterEl.innerHTML = DM_NAMES.map((n, i) => `<button class="dm-chip ${myDm === i ? 'on' : ''}" data-i="${i}" aria-pressed="${myDm === i}">${ELEMENT_CONFIG[EL5[Math.floor(i / 2)]].emoji}${n}</button>`).join('');
+  dmFilterEl.querySelectorAll('.dm-chip').forEach(b => b.addEventListener('click', () => {
+    const i = +b.dataset.i;
+    myDm = myDm === i ? null : i;
+    try { myDm === null ? localStorage.removeItem('ohaengi_dm') : localStorage.setItem('ohaengi_dm', myDm); } catch (e) {}
+    renderDmFilter();
+    renderDmFortune(selectedDate || new Date());
+    gtag('event', 'select_daymaster', { day_master: myDm === null ? 'none' : DM_NAMES[myDm], event_category: '캘린더' });
+  }));
+}
+function renderDmFortune(date) {
+  if (!date) return;
+  if (myDm === null) { dmFortuneEl.innerHTML = '<div class="dmf-empty">내 일간을 고르면 이 날 나에게 강한 운과 할 일을 알려드려요</div>'; return; }
+  const gz = getDayGanZhi(date.getFullYear(), date.getMonth(), date.getDate());
+  const g = TIAN_GAN.indexOf(gz.gan), z = DI_ZHI.indexOf(gz.zhi);
+  const t1 = tenGodOf(myDm, g), t2 = tenGodOf(myDm, ZHI_MAIN_GAN[z]);
+  const m = TEN_GOD_COPY[t1], m2 = TEN_GOD_COPY[t2];
+  const dayC = ELEMENT_CONFIG[gz.ganElement];
+  const f = fillElementOf(myDm, g);
+  const spots = places.map((p, i) => ({ p, i })).filter(o => o.p.elements.includes(f.el)).slice(0, 4);
+  const same = m.luck === m2.luck;
+  const md = `${date.getMonth() + 1}월 ${date.getDate()}일`;
+  dmFortuneEl.style.setProperty('--dmf-c', dayC.color);
+  dmFortuneEl.style.setProperty('--dmf-t', dayC.bg);
+  dmFortuneEl.innerHTML = `
+    <div class="dmf-card">
+      <span class="dmf-tag">${md} · ${DM_NAMES[myDm]} · ${m.luck}</span>
+      <div class="dmf-head">${m.head}</div>
+      <div class="dmf-base">바탕에는 <b>${m2.base}</b> 기운이 깔려 있어요.${same ? '' : ` (${m2.luck}도 함께)`}</div>
+      ${same ? '<div class="dmf-double">천간·지지가 같은 운이라 이 흐름이 두 배로 강해요</div>' : ''}
+    </div>
+    <div class="dmf-row"><em>일</em><p>${m.work}</p></div>
+    <div class="dmf-row"><em>돈</em><p>${m.money}</p></div>
+    <div class="dmf-row"><em>사람</em><p>${m.people}</p></div>
+    <div class="dmf-row no"><em>피하기</em><p>${m.no}</p></div>
+    <div class="dmf-fill">
+      <p>${ELEMENT_CONFIG[f.el].emoji}<span>이 날은 ${f.why} <b>${HANJA_MAP[f.el]}(${f.el})</b> 기운을 채워보세요</span></p>
+      <div class="dmf-spots">${spots.map(o => `<button data-idx="${o.i}">${ELEMENT_CONFIG[o.p.elements[0]].emoji}${o.p.name}</button>`).join('')}</div>
+    </div>`;
+  dmFortuneEl.querySelectorAll('.dmf-spots button').forEach(b => b.addEventListener('click', () => {
+    const place = places[+b.dataset.idx];
+    document.querySelector('.nav-item[data-page="map"]').click();
+    setTimeout(() => { map.flyTo([place.lat, place.lng], 15, { duration: 0.8 }); openDetailSheet(place); }, 250);
+  }));
+}
+const _renderDayDetail = renderDayDetail;
+renderDayDetail = function (date) { _renderDayDetail(date); renderDmFortune(date); };
+renderDmFilter();
+renderDmFortune(selectedDate || new Date());
 
 </script>
 </body>
